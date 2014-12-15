@@ -1,0 +1,138 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function dd5_spell_schema() {
+
+  $schema = array();
+
+  $schema['dd5_spell'] = array(
+    'description' => 'The base table for the Spell entity',
+    'fields' => array(
+      'spell_id' => array(
+        'description' => 'Primary key of the Spell entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The bundle of this Spell.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'name' => array(
+        'description' => 'Spell name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this spell; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the spell is published (visible to non-administrators).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the group was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the group was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'spell_changed' => array('updated'),
+      'spell_created' => array('created'),
+    ),
+    'unique keys' => array(
+    ),
+    'foreign keys' => array(
+      'spell_revision' => array(
+        'table' => 'dd5_spell_revision',
+      ),
+      'spell_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('spell_id'),
+  );
+
+  $schema['dd5_spell_group'] = array(
+    'description' => 'The base table for the Spell entity',
+    'fields' => array(
+      'spell_group_id' => array(
+        'description' => 'Primary key of the Spell group entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The bundle of this Spell group.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'name' => array(
+        'description' => 'Spell group name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this spell; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the spell is published (visible to non-administrators).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the group was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the group was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'spell_changed' => array('updated'),
+      'spell_created' => array('created'),
+    ),
+    'unique keys' => array(
+    ),
+    'foreign keys' => array(
+      'version_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('spell_group_id'),
+  );
+
+  return $schema;
+}

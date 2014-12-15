@@ -1,0 +1,236 @@
+<?php
+
+include_once 'includes/spell.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function dd5_spell_menu() {
+  $items = array();
+
+  $items['admin/dnd5/spells'] = array(
+    'title' => 'D&D Spells',
+    'description' => 'D&D Spells related configuration.',
+    'position' => 'left',
+    'weight' => -20,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+  );
+
+
+
+
+  $items['admin/dnd5/spell-group'] = array(
+    'title' => 'D&D Spell Groups',
+    'description' => 'D&D Spells groupsrelated configuration.',
+    'position' => 'left',
+    'weight' => -10,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function dd5_spell_entity_info() {
+  $items['spell'] = array(
+    'label' => t('Spell'),
+    'controller class' => 'SpellController',
+    'entity class' => 'Spell',
+    'load hook' => 'spell_load',
+    'base table' => 'dd5_spell',
+    'uri callback' => 'spell_uri',
+    'fieldable' => TRUE,
+    'revisionable' => FALSE,
+    'access callback' => 'spell_entity_access',
+    'entity keys' => array(
+      'id' => 'spell_id',
+      'label' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(
+      'spell' => array(
+        'label' => t('Spell'),
+        'admin' => array(
+          'path' => 'admin/dnd5/spells/spell-type/manage/spell',
+          'bundle argument' => 5,
+          'real path' => 'admin/dnd5/spells/spell-type/manage/%',
+          'access callback' => TRUE,
+        ),
+      ),
+      'lleps' => array(
+        'label' => t('Lleps'),
+        'admin' => array(
+          'path' => 'admin/dnd5/spells/spell-type/manage/lleps',
+          'bundle argument' => 5,
+          'real path' => 'admin/dnd5/spells/spell-type/manage/%',
+          'access callback' => TRUE,
+        ),
+      ),
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+      'teaser' => array(
+        'label' => t('Teaser'),
+        'custom settings' => TRUE,
+      ),
+    ),
+    'module' => 'dd5_spell',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'controller class' => 'SpellUIController',
+      'path' => 'admin/dnd5/spells/manage',
+      'type path' => 'admin/dnd5/spells/spell-type/manage',
+      'file' => 'includes/spell.inc',
+      'menu wildcard' => '%spell',
+    ),
+  );
+
+  $items['spell_group'] = array(
+    'label' => t('Spell Group'),
+    'controller class' => 'SpellGroupController',
+    'entity class' => 'SpellGroup',
+    'load hook' => 'spell_group_load',
+    'base table' => 'dd5_spell_group',
+    'uri callback' => 'spell_group_uri',
+    'fieldable' => TRUE,
+    'revisionable' => FALSE,
+    'access callback' => 'spell_group_entity_access',
+    'entity keys' => array(
+      'id' => 'spell_group_id',
+      'label' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(
+      'spell' => array(
+        'label' => t('Spell Group'),
+        'admin' => array(
+          'path' => 'admin/dnd5/spell-group/manage/spell-group',
+          'access arguments' => array('administer dnd'),
+        ),
+      ),
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+      'teaser' => array(
+        'label' => t('Teaser'),
+        'custom settings' => TRUE,
+      ),
+    ),
+    'module' => 'dd5_spell',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'controller class' => 'SpellGroupUIController',
+      'path' => 'admin/dnd5/spell-group/manage',
+      'file' => 'includes/spell_group.inc',
+    ),
+  );
+
+  return $items;
+}
+
+function dd5_spell_entity_property_info() {
+  $info = array();
+
+  return $info;
+
+}
+
+function dd5_spell_entity_property_info_alter(&$info) {
+  $info['spell']['properties']['name']['label'] = 'Spell name';
+}
+
+function _spell_add_access() {
+  return TRUE;
+}
+function _spell_group_add_access() {
+  return TRUE;
+}
+
+/**
+ * Access callback for the entity API.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $profile
+ *   (optional) A profile to check access for. If nothing is given, access for
+ *   all profiles is determined.
+ * @param $account
+ *   (optional) The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function spell_entity_access($op, $entity = NULL, $account = NULL) {
+  return TRUE;
+}
+
+function spell_load() {
+
+}
+
+function spell_uri($spell) {
+  return array(
+    'path' => 'spell/' . $spell->spell_id,
+    'options' => array(
+
+    ),
+  );
+}
+
+
+
+
+/**
+ * Access callback for the entity API.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $profile
+ *   (optional) A profile to check access for. If nothing is given, access for
+ *   all profiles is determined.
+ * @param $account
+ *   (optional) The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function spell_group_entity_access($op, $entity = NULL, $account = NULL) {
+  return TRUE;
+}
+
+function spell_group_load() {
+
+}
+
+function spell_group_uri($spell_group) {
+  return array(
+    'path' => 'spell-group/' . $spell_group->spell_id,
+    'options' => array(
+
+    ),
+  );
+}
+
+

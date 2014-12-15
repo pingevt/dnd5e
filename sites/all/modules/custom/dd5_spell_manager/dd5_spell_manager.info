@@ -1,0 +1,6 @@
+name = D&D 5e Spell manager
+description = Spell manager for D&D 5e.
+package = D&D 5e
+core = 7.x
+
+dependencies[] = dd5
