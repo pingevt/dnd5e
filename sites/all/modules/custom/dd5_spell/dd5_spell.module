@@ -62,18 +62,18 @@ function dd5_spell_entity_info() {
       'spell' => array(
         'label' => t('Spell'),
         'admin' => array(
-          'path' => 'admin/dnd5/spells/spell-type/manage/spell',
+          'path' => 'admin/dnd5/spells/spell-type/manage/%spell_type',
           'bundle argument' => 5,
-          'real path' => 'admin/dnd5/spells/spell-type/manage/%',
+          'real path' => 'admin/dnd5/spells/spell-type/manage/spell',
           'access callback' => TRUE,
         ),
       ),
       'lleps' => array(
         'label' => t('Lleps'),
         'admin' => array(
-          'path' => 'admin/dnd5/spells/spell-type/manage/lleps',
+          'path' => 'admin/dnd5/spells/spell-type/manage/%spell_type',
           'bundle argument' => 5,
-          'real path' => 'admin/dnd5/spells/spell-type/manage/%',
+          'real path' => 'admin/dnd5/spells/spell-type/manage/lleps',
           'access callback' => TRUE,
         ),
       ),
@@ -187,6 +187,10 @@ function spell_entity_access($op, $entity = NULL, $account = NULL) {
 
 function spell_load() {
 
+}
+
+function spell_type_load($name) {
+  return $name;
 }
 
 function spell_uri($spell) {

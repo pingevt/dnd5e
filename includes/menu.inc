@@ -752,12 +752,6 @@ function _menu_item_localize(&$item, $map, $link_translate = FALSE) {
  */
 function _menu_translate(&$router_item, $map, $to_arg = FALSE) {
 
-if ($router_item['path'] == 'admin/dnd5/spells/manage/%/display'){
-  dpm($router_item);
-  dpm($map);
-  dpm(debug_backtrace());
-}
-
   if ($to_arg && !empty($router_item['to_arg_functions'])) {
     // Fill in missing path elements, such as the current uid.
     _menu_link_map_translate($map, $router_item['to_arg_functions']);
@@ -779,10 +773,7 @@ if ($router_item['path'] == 'admin/dnd5/spells/manage/%/display'){
   if (isset($router_item['tab_parent'])) {
     $tab_parent_map = explode('/', $router_item['tab_parent']);
   }
-if ($router_item['path'] == 'admin/dnd5/spells/manage/%/display'){
-  dpm($link_map);
-  dpm($path_map);
-}
+
   for ($i = 0; $i < $router_item['number_parts']; $i++) {
     if ($link_map[$i] == '%') {
       $link_map[$i] = $path_map[$i];

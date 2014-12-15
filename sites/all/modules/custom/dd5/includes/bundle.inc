@@ -25,11 +25,9 @@ class BundleUIController extends EntityDefaultUIController {
       'title' => $this->entityInfo['label'] . ' bundles',
       'description' => 'Bundles for ' . $plural_label,
       'page callback'  => 'drupal_get_form',
-      'page arguments'  => array('entity_type_page', $this->entityType),
+      'page arguments'  => array('dd5_entity_type_page', $this->entityType),
       'access callback'  => 'entity_access',
-      'access arguments' => array('view'),
-      'file' => 'bundle.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module']) . '/includes',
+      'access arguments' => array('view', $this->entityType),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 10,
     );
@@ -40,20 +38,28 @@ class BundleUIController extends EntityDefaultUIController {
       'title arguments' => array('add', $this->entityType),
       'description' => 'Add a new ' . $this->entityType,
       'page callback'  => 'dd5_entity_add_page',
-      'access callback'  => 'dd5_entity_entity_access',
+      'access callback'  => 'dd5_entity_access',
       'access arguments' => array('edit'),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 20,
       'type' => MENU_LOCAL_ACTION,
     );
 
+    $items[$this->type_path . '/' . $wildcard . '_type'] = array(
+      'title' => '',
+      'type' => MENU_NORMAL_ITEM,
+      'access callback' => TRUE,
+    );
+
     // Add menu items to add each different type of entity.
     foreach ($this->entityInfo['bundles'] as $type => $bundle_info) {
+      /*
       $items[$this->type_path . '/' . $type] = array(
         'title' => $type,
         'type' => MENU_NORMAL_ITEM,
         'access callback' => TRUE,
       );
+      */
 
       $items[$this->path . '/add/' . $type] = array(
         'title callback' => 'entity_ui_get_action_title',

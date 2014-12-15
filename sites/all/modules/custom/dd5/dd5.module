@@ -16,7 +16,7 @@ function dd5_menu() {
   return $items;
 }
 
-function dd5_entity_entity_access($op, $entity = NULL) {
+function dd5_entity_access($op, $entity = NULL) {
   return TRUE;
 }
 

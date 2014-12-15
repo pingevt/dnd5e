@@ -3,4 +3,4 @@ description = D&D 5e.
 package = D&D 5e
 core = 7.x
 
-files[] = includes/spell.inc
+files[] = includes/bundle.inc
