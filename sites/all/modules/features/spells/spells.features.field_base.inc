@@ -10,6 +10,31 @@
 function spells_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_source'
+  $field_bases['field_source'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_source',
+    'foreign keys' => array(),
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        'dd5_player_handbook' => 'D&D5e Player Handbook',
+      ),
+      'allowed_values_function' => '',
+    ),
+    'translatable' => 0,
+    'type' => 'list_text',
+  );
+
   // Exported field_base: 'field_spell_casting_time'
   $field_bases['field_spell_casting_time'] = array(
     'active' => 1,
@@ -293,6 +318,49 @@ function spells_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_text',
+  );
+
+  // Exported field_base: 'field_spells'
+  $field_bases['field_spells'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_spells',
+    'foreign keys' => array(
+      'dd5_spell' => array(
+        'columns' => array(
+          'target_id' => 'spell_id',
+        ),
+        'table' => 'dd5_spell',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(
+          'spell' => 'spell',
+        ),
+      ),
+      'target_type' => 'spell',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
   );
 
   return $field_bases;

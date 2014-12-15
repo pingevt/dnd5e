@@ -10,6 +10,43 @@
 function spells_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'spell-spell-field_source'
+  $field_instances['spell-spell-field_source'] = array(
+    'bundle' => 'spell',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 13,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'spell',
+    'field_name' => 'field_source',
+    'label' => 'Source',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_select',
+      'weight' => 10,
+    ),
+  );
+
   // Exported field_instance: 'spell-spell-field_spell_casting_time'
   $field_instances['spell-spell-field_spell_casting_time'] = array(
     'bundle' => 'spell',
@@ -404,11 +441,55 @@ function spells_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'spell_group-spell-field_spells'
+  $field_instances['spell_group-spell-field_spells'] = array(
+    'bundle' => 'spell',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'spell_group',
+    'field_name' => 'field_spells',
+    'label' => 'Spells',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 1,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Casting time');
   t('Consumed?');
   t('Higher level effects');
+  t('Source');
   t('Spell component cost');
   t('Spell components');
   t('Spell description');
@@ -416,6 +497,7 @@ function spells_field_default_field_instances() {
   t('Spell level');
   t('Spell range');
   t('Spell type');
+  t('Spells');
 
   return $field_instances;
 }

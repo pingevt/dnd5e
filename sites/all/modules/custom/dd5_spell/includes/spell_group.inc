@@ -24,7 +24,7 @@ class SpellGroupController extends EntityAPIController {
   }
 }
 
-class SpellGroupUIController extends EntityDefaultUIController {
+class SpellGroupUIController extends BundleUIController {
 
 }
 
