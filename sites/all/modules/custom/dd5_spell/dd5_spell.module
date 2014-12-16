@@ -1,6 +1,7 @@
 <?php
 
-include_once 'includes/spell.inc';
+//include_once 'includes/spell.inc';
+//include_once 'includes/spell_group.inc';
 
 /**
  * Implements hook_menu().

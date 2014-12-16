@@ -22,6 +22,22 @@ class SpellGroupController extends EntityAPIController {
     return $build;
 
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save($entity, DatabaseTransaction $transaction = NULL) {
+    if (isset($entity->is_new) && $entity->is_new) {
+      $entity->created = time();
+      $entity->updated = $entity->created;
+    }
+    else {
+      $entity->updated = time();
+    }
+
+    parent::save($entity, $transaction);
+
+  }
 }
 
 class SpellGroupUIController extends BundleUIController {

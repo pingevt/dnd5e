@@ -25,6 +25,11 @@ function dd5_entity_type_page($form, &$form_state, $entityType) {
   return $controller->typeOverviewForm($form, $form_state);
 }
 
+function dd5_entity_add_page($entity_type) {
+  $controller = entity_ui_controller($entity_type);
+  return $controller->addPage();
+}
+
 /**
  * Displays the list of available model types for model creation.
  *
