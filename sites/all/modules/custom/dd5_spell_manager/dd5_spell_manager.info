@@ -4,3 +4,5 @@ package = D&D 5e
 core = 7.x
 
 dependencies[] = dd5
+dependencies[] = dd5_spell
+dependencies[] = dd5_character

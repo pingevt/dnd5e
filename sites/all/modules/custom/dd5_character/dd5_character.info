@@ -1,0 +1,8 @@
+name = D&D 5e Character
+description = D&D 5e character class and functions.
+package = D&D 5e
+core = 7.x
+
+dependencies[] = dd5
+
+files[] = includes/character.inc

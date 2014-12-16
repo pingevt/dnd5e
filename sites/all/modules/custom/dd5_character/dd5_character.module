@@ -1,0 +1,192 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function dd5_character_menu() {
+  $items = array();
+
+  $items['admin/dnd5/character'] = array(
+    'title' => 'D&D Character',
+    'description' => 'D&D Character related configuration.',
+    'position' => 'left',
+    'weight' => -20,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function dd5_character_entity_info() {
+  $items['character'] = array(
+    'label' => t('Character'),
+    'controller class' => 'CharacterController',
+    'entity class' => 'Character',
+    'load hook' => 'character_load',
+    'base table' => 'dd5_character',
+    'uri callback' => 'character_uri',
+    'fieldable' => TRUE,
+    'revisionable' => FALSE,
+    'access callback' => 'character_entity_access',
+    'entity keys' => array(
+      'id' => 'char_id',
+      'label' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(
+      'character' => array(
+        'label' => t('Character'),
+        'admin' => array(
+          'path' => 'admin/dnd5/character/character-type/manage/%character_type',
+          'bundle argument' => 5,
+          'real path' => 'admin/dnd5/character/character-type/manage/character',
+          'access callback' => TRUE,
+        ),
+      ),
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+      'teaser' => array(
+        'label' => t('Teaser'),
+        'custom settings' => TRUE,
+      ),
+    ),
+    'module' => 'dd5_character',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'controller class' => 'CharacterUIController',
+      'path' => 'admin/dnd5/character/manage',
+      'type path' => 'admin/dnd5/character/character-type/manage',
+      'file' => 'includes/character.inc',
+      'menu wildcard' => '%character',
+    ),
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback for the entity API.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $profile
+ *   (optional) A profile to check access for. If nothing is given, access for
+ *   all profiles is determined.
+ * @param $account
+ *   (optional) The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function character_entity_access($op, $entity = NULL, $account = NULL) {
+  return TRUE;
+}
+
+/**
+ * Fetch a model object. Make sure that the wildcard you choose
+ * in the model entity definition fits the function name here.
+ *
+ * @param $model_id
+ *   Integer specifying the model id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $model object or FALSE if it cannot be loaded.
+ *
+ * @see model_load_multiple()
+ */
+function character_load($char_id, $reset = FALSE) {
+  $characters = character_load_multiple(array($char_id), array(), $reset);
+  return reset($characters);
+}
+
+
+/**
+ * Load multiple models based on certain conditions.
+ *
+ * @param $model_ids
+ *   An array of model IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {model} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of model objects, indexed by model_id.
+ *
+ * @see entity_load()
+ * @see model_load()
+ */
+function character_load_multiple($char_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('character', $char_ids, $conditions, $reset);
+}
+
+
+
+function character_type_load($name) {
+  return $name;
+}
+
+function character_uri($character) {
+  return array(
+    'path' => 'character/' . $character->char_id,
+    'options' => array(
+
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function dd5_character_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link to 'node/add' on 'admin/content' page.
+  if ($root_path == 'admin/dnd5/character/manage') {
+    $item = menu_get_item('admin/dnd5/character/manage/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+}
+
+function dd5_character_theme() {
+  return array(
+    'character' => array(
+      'render element' => 'elements',
+      'template' => 'templates/character',
+    ),
+  );
+}
+
+function dd5_character_preprocess_entity(&$vars) {
+
+  if ($vars['entity_type'] == 'character') {
+    $character = $vars['character'];
+
+    $vars['content']['links'] = array(
+      '#theme' => 'item_list',
+      '#items' => array(
+        l('Manage spells', 'character/' . $character->char_id . '/manage-spells'),
+      ),
+      '#weight' => 50,
+    );
+  }
+}
+
+

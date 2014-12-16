@@ -28,6 +28,8 @@ class SpellController extends EntityAPIController {
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
     if (isset($entity->is_new) && $entity->is_new) {
+      global $user;
+      $entity->uid = $user->uid;
       $entity->created = time();
       $entity->updated = $entity->created;
     }

@@ -12,7 +12,7 @@ function dd5_spell_menu() {
   $items['admin/dnd5/spells'] = array(
     'title' => 'D&D Spells',
     'description' => 'D&D Spells related configuration.',
-    'position' => 'left',
+    'position' => 'right',
     'weight' => -20,
     'page callback' => 'system_admin_menu_block_page',
     'access arguments' => array('access administration pages'),
@@ -26,8 +26,8 @@ function dd5_spell_menu() {
   $items['admin/dnd5/spell-group'] = array(
     'title' => 'D&D Spell Groups',
     'description' => 'D&D Spells groupsrelated configuration.',
-    'position' => 'left',
-    'weight' => -10,
+    'position' => 'right',
+    'weight' => -19,
     'page callback' => 'system_admin_menu_block_page',
     'access arguments' => array('access administration pages'),
     'file path' => drupal_get_path('module', 'system'),
@@ -162,6 +162,32 @@ function dd5_spell_entity_property_info() {
 
 function dd5_spell_entity_property_info_alter(&$info) {
   $info['spell']['properties']['name']['label'] = 'Spell name';
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function dd5_spell_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link to 'node/add' on 'admin/content' page.
+  if ($root_path == 'admin/dnd5/spells/manage') {
+    $item = menu_get_item('admin/dnd5/spells/manage/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+
+  if ($root_path == 'admin/dnd5/spell-group/manage') {
+    $item = menu_get_item('admin/dnd5/spell-group/manage/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
 }
 
 function _spell_add_access() {

@@ -43,7 +43,7 @@ class BundleUIController extends EntityDefaultUIController {
       'access arguments' => array('edit'),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 20,
-      'type' => MENU_LOCAL_ACTION,
+      //'type' => MENU_LOCAL_ACTION,
     );
 
     $items[$this->type_path . '/' . $wildcard . '_type'] = array(
@@ -69,7 +69,7 @@ class BundleUIController extends EntityDefaultUIController {
         'page arguments' => array($this->entityType, entity_create($this->entityType, array('type' => $type)), 'add'),
         'access callback' => 'entity_access',
         'access arguments' => array('create', $this->entityType),
-        'type' => MENU_LOCAL_ACTION,
+        'type' => MENU_NORMAL_ITEM,
       );
     }
 
@@ -85,11 +85,11 @@ class BundleUIController extends EntityDefaultUIController {
     $item = menu_get_item();
     $content = system_admin_menu_block($item);
 
+    // Bypass listing is only 1 item.
     if (count($content) == 1) {
       $item = array_shift($content);
       drupal_goto($item['href']);
     }
-
     return theme('dd5_entity_add_list', array('content' => $content));
   }
 

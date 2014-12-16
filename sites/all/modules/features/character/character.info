@@ -1,0 +1,15 @@
+name = Character
+core = 7.x
+package = Features
+version = 7.x-1.0
+project = character
+dependencies[] = features
+dependencies[] = image
+dependencies[] = list
+dependencies[] = options
+features[features_api][] = api:2
+features[field_base][] = field_char_image
+features[field_base][] = field_char_level
+features[field_instance][] = character-character-field_char_image
+features[field_instance][] = character-character-field_char_level
+project path = sites/all/modules/features
