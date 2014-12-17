@@ -43,8 +43,6 @@ function dd5_spell_manager_menu() {
 }
 
 function dd5_spell_manager_page($character) {
-  //global $user;
-  //$user = user_load($user->uid);
 
   $character_spell_data = isset($character->field_spell_data[LANGUAGE_NONE][0]['value'])? unserialize($character->field_spell_data[LANGUAGE_NONE][0]['value']) : Character::spell_data_default();
 
@@ -55,6 +53,54 @@ function dd5_spell_manager_page($character) {
   $build = array();
   $character_spells = $character->getSpells();
 
+  // Build slots table.
+  $build['spell_slot_table'] = array(
+    '#theme' => 'table',
+    '#title' => 'Spell Slots per level',
+    '#header' => array(
+      array('data' => 'Cantrips', 'style' => 'width: 1px'),
+      array('data' => '1st', 'style' => 'width: 1px'),
+      array('data' => '2nd', 'style' => 'width: 1px'),
+      array('data' => '3rd', 'style' => 'width: 1px'),
+      array('data' => '4th', 'style' => 'width: 1px'),
+      array('data' => '5th', 'style' => 'width: 1px'),
+      array('data' => '6th', 'style' => 'width: 1px'),
+      array('data' => '7th', 'style' => 'width: 1px'),
+      array('data' => '8th', 'style' => 'width: 1px'),
+      array('data' => '9th', 'style' => 'width: 1px'),
+    ),
+    '#rows' => array(),
+  );
+
+  // First row is another header row, indicating number of slots.
+  $spell_slots = $character->getSpellSlots();
+  $character_lvl = $character->getLvl();
+
+  $row = array();
+
+  for ($i=0; $i<=9; $i++) {
+    $row[] = array(
+      'data' => $spell_slots[($character_lvl - 1)][$i],
+      'header' => TRUE,
+    );
+    $row2[] = array(
+      'data' => '',
+    );
+  }
+  $build['spell_slot_table']['#rows'][] = $row;
+  $build['spell_slot_table']['#rows'][] = $row2;
+
+  foreach ($character_spell_data['cast'] as $item) {
+    $spell = current(entity_load('spell', array($item['spell'])));
+
+    if ($build['spell_slot_table']['#rows'][1][$item['lvl']]['data'] != '') {
+      $build['spell_slot_table']['#rows'][1][$item['lvl']]['data'] .= '<br />';
+    }
+
+    $build['spell_slot_table']['#rows'][1][$item['lvl']]['data'] .= $spell->name;
+  }
+
+  // build spells table.
   $build['spell_table'] = array(
     '#theme' => 'table',
     '#header' => array(
@@ -142,43 +188,19 @@ function dd5_spell_manager_page($character) {
     $spell_lvl = $spell->field_spell_level[LANGUAGE_NONE][0]['value'];
     $row[] = ($spell_lvl == 0)? 'Cantrip' : $spell_lvl;
 
-    // Total counts
-    $counts = array(
-      0 => 5,
-      1 => 4,
-      2 => 3,
-      3 => 3,
-      4 => 3,
-      5 => 3,
-      6 => 2,
-      7 => 2,
-      8 => 1,
-      9 => 1,
-    );
     for ($i=0; $i<=9; $i++) {
       $checkboxes = array();
 
       if(($spell_lvl == 0 && $i == 0) || ($spell_lvl > 0 && $i >= $spell_lvl)) {
-        for ($j=0; $j<=$counts[$i]; $j++) {
-          $checkboxes[$j] = array(
-            '#theme' => 'checkbox',
-            '#attributes' => array(
-              'class' => array('spell-cast-toggle'),
-              'data-spell-id' => $spell->spell_id,
-              'data-char-id' => $character->char_id,
-              'data-spell-slot-level' => $i,
-              'data-spell-slot-level-delta' => $j,
-            ),
-          );
-
-          if ($j != 0) {
-            $checkboxes[$j]['#prefix'] = '<br>';
-          }
-
-          if (isset($character_spell_data['cast'][$i][$j]) && in_array($spell->spell_id, $character_spell_data['cast'][$i][$j])) {
-            $checkboxes[$j]['#attributes']['checked'] = 'checked';
-          }
-        }
+        $checkboxes = array(
+          '#theme' => 'checkbox',
+          '#attributes' => array(
+            'class' => array('spell-cast-toggle'),
+            'data-spell-id' => $spell->spell_id,
+            'data-char-id' => $character->char_id,
+            'data-spell-slot-level' => $i,
+          ),
+        );
       }
 
       $row[] = array('data' => $checkboxes);
@@ -189,6 +211,16 @@ function dd5_spell_manager_page($character) {
 
   return $build;
 }
+
+
+
+
+
+
+
+
+
+
 
 function toggle_spell_prepared($character, $spell, $value) {
   $character_spell_data = isset($character->field_spell_data[LANGUAGE_NONE][0]['value'])? unserialize($character->field_spell_data[LANGUAGE_NONE][0]['value']) : Character::spell_data_default();
@@ -214,12 +246,18 @@ function toggle_spell_cast($character, $spell, $lvl, $delta, $value) {
   $character_spell_data = isset($character->field_spell_data[LANGUAGE_NONE][0]['value'])? unserialize($character->field_spell_data[LANGUAGE_NONE][0]['value']) : Character::spell_data_default();
 
   if ($value === 'true') {
-    $character_spell_data['cast'][$lvl][$delta][] = $spell->spell_id;
-    $character_spell_data['cast'][$lvl][$delta] = array_unique($character_spell_data['cast'][$lvl][$delta]);
+    //$character_spell_data['cast'][$lvl][$delta][] = $spell->spell_id;
+    //$character_spell_data['cast'][$lvl][$delta] = array_unique($character_spell_data['cast'][$lvl][$delta]);
+    $character_spell_data['cast'][] = array(
+      'spell' => $spell->spell_id,
+      'lvl' => $lvl,
+    );
   }
+  /*
   else {
     $character_spell_data['cast'][$lvl][$delta] = array_diff($character_spell_data['cast'][$lvl][$delta], array($spell->spell_id));
   }
+  */
 
   $character->field_spell_data[LANGUAGE_NONE][0]['value'] = serialize($character_spell_data);
 

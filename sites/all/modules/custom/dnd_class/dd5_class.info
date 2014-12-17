@@ -1,0 +1,9 @@
+name = D&D 5e Class
+description = D&D 5e Class class and functions.
+package = D&D 5e
+core = 7.x
+
+dependencies[] = dd5
+dependencies[] = entity_bundle_plugin
+
+files[] = includes/charClass.inc

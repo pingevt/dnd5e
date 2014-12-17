@@ -22,6 +22,24 @@ class Character extends Entity {
     return $this->name;
   }
 
+  function getLvl() {
+    if (isset($this->field_char_level[LANGUAGE_NONE][0]['value'])) {
+      return (int) $this->field_char_level[LANGUAGE_NONE][0]['value'];
+    }
+
+    return FALSE;
+  }
+
+  function getCharClass() {
+    if (isset($this->field_char_class[LANGUAGE_NONE][0]['target_id'])) {
+      $char_class = current(entity_load('class', array($this->field_char_class[LANGUAGE_NONE][0]['target_id'])));
+
+      return $char_class;
+    }
+
+    return FALSE;
+  }
+
   function getSpells() {
     $spells = array();
 
@@ -38,6 +56,16 @@ class Character extends Entity {
     }
 
     return $spells;
+  }
+
+  function getSpellSlots() {
+
+    if ($char_class = $this->getCharClass()) {
+      return $char_class->getSpellSlotsArray();
+    }
+
+    return FALSE;
+
   }
 
 }

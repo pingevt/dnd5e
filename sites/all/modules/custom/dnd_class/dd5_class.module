@@ -1,0 +1,241 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function dd5_class_menu() {
+  $items = array();
+
+  $items['admin/dnd5/class'] = array(
+    'title' => 'D&D Class',
+    'description' => 'D&D Class related configuration.',
+    'position' => 'left',
+    'weight' => -18,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function dd5_class_entity_info() {
+  $items['class'] = array(
+    'label' => t('Class'),
+    'controller class' => 'CharClassController',
+    'bundle plugin' => array(
+      'plugin type' => 'dd5_class_type',
+      'broken class' => 'CharClassController',
+    ),
+    'entity class' => 'CharClass',
+    'load hook' => 'class_load',
+    'base table' => 'dd5_class',
+    'uri callback' => 'class_uri',
+    'fieldable' => TRUE,
+    'revisionable' => FALSE,
+    'access callback' => 'class_entity_access',
+    'entity keys' => array(
+      'id' => 'class_id',
+      'label' => 'name',
+      'bundle' => 'type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(
+      /*
+      'class' => array(
+        'label' => t('Class'),
+        'admin' => array(
+          'path' => 'admin/dnd5/class/class-type/manage/%class_type',
+          'bundle argument' => 5,
+          'real path' => 'admin/dnd5/class/class-type/manage/class',
+          'access callback' => TRUE,
+        ),
+      ),
+      */
+    ),
+    'view modes' => array(
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
+      'teaser' => array(
+        'label' => t('Teaser'),
+        'custom settings' => TRUE,
+      ),
+    ),
+    'module' => 'dd5_class',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'controller class' => 'CharClassUIController',
+      'path' => 'admin/dnd5/class/manage',
+      'type path' => 'admin/dnd5/class/class-type/manage',
+      'file' => 'includes/class.inc',
+      'menu wildcard' => '%class',
+    ),
+  );
+
+  foreach (dd5_char_class_get_type_plugins() as $plugin_name => $plugin) {
+    $items['class']['bundles'][$plugin_name] = array(
+      'label' => $plugin['title'],
+      'admin' => array(
+        'path' => 'admin/dnd5/class/class-type/manage/%class_type',
+        'bundle argument' => 5,
+        'real path' => 'admin/dnd5/class/class-type/manage/' . $plugin_name,
+        'access callback' => TRUE,
+      ),
+    );
+  }
+
+  return $items;
+}
+
+function dd5_char_class_get_type_plugins() {
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('dd5_class', 'dd5_class_type');
+  foreach ($plugins as $key => $plugin) {
+    if (!class_exists($plugin['class'])) {
+      // Invalid class specified.
+      unset($plugins[$key]);
+      continue;
+    }
+    $r = new ReflectionClass($plugin['class']);
+
+    if (!$r->hasMethod('isValid') || !call_user_func(array($plugin['class'], 'isValid'))) {
+      // Invalid plugin specified.
+      unset($plugins[$key]);
+      continue;
+    }
+  }
+  uasort($plugins, 'ctools_plugin_sort');
+  return $plugins;
+}
+
+/**
+ * Access callback for the entity API.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $profile
+ *   (optional) A profile to check access for. If nothing is given, access for
+ *   all profiles is determined.
+ * @param $account
+ *   (optional) The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function class_entity_access($op, $entity = NULL, $account = NULL) {
+  return TRUE;
+}
+
+/**
+ * Fetch a model object. Make sure that the wildcard you choose
+ * in the model entity definition fits the function name here.
+ *
+ * @param $model_id
+ *   Integer specifying the model id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $model object or FALSE if it cannot be loaded.
+ *
+ * @see model_load_multiple()
+ */
+function class_load($class_id, $reset = FALSE) {
+  $classes = class_load_multiple(array($class_id), array(), $reset);
+  return reset($classes);
+}
+
+/**
+ * Load multiple models based on certain conditions.
+ *
+ * @param $model_ids
+ *   An array of model IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {model} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of model objects, indexed by model_id.
+ *
+ * @see entity_load()
+ * @see model_load()
+ */
+function class_load_multiple($class_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('class', $class_ids, $conditions, $reset);
+}
+
+function class_type_load($name) {
+  return $name;
+}
+
+function class_uri($class) {
+  return array(
+    'path' => 'class/' . $class->class_id,
+    'options' => array(
+
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function dd5_class_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link to 'node/add' on 'admin/content' page.
+  if ($root_path == 'admin/dnd5/class/manage') {
+    $item = menu_get_item('admin/dnd5/class/manage/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+}
+
+function dd5_class_theme() {
+  return array(
+    'class' => array(
+      'render element' => 'elements',
+      'template' => 'templates/class',
+    ),
+  );
+}
+
+function dd5_class_preprocess_entity(&$vars) {
+
+  if ($vars['entity_type'] == 'class') {
+    $class = $vars['class'];
+  }
+}
+
+
+function dd5_class_ctools_plugin_type() {
+  return array(
+    'dd5_class_type' => array(
+      'use hooks' => FALSE,
+      'classes' => array('class'),
+    ),
+  );
+}
+
+
+/**
+* Implements hook_ctools_plugin_directory().
+*/
+function dd5_class_ctools_plugin_directory($owner, $plugin_type) {
+  // This tells ctools that the license types
+  // are located in the plugins/ subfolder.
+  if ($owner == 'dd5_class') {
+    return "plugins/$plugin_type";
+  }
+}
+

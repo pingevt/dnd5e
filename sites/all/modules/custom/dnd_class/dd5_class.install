@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function dd5_class_schema() {
+
+  $schema = array();
+
+  $schema['dd5_class'] = array(
+    'description' => 'The base table for the class entity',
+    'fields' => array(
+      'class_id' => array(
+        'description' => 'Primary key of the class entity',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The bundle of this class.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'name' => array(
+        'description' => 'class name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this class; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the class was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'updated' => array(
+        'description' => 'The Unix timestamp when the class was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'character_changed' => array('updated'),
+      'character_created' => array('created'),
+    ),
+    'unique keys' => array(
+    ),
+    'foreign keys' => array(
+      'character_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('class_id'),
+  );
+
+  return $schema;
+}
