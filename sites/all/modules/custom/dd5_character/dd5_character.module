@@ -178,14 +178,6 @@ function dd5_character_preprocess_entity(&$vars) {
 
   if ($vars['entity_type'] == 'character') {
     $character = $vars['character'];
-
-    $vars['content']['links'] = array(
-      '#theme' => 'item_list',
-      '#items' => array(
-        l('Manage spells', 'character/' . $character->char_id . '/manage-spells'),
-      ),
-      '#weight' => 50,
-    );
   }
 }
 

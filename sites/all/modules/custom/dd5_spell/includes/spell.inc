@@ -128,4 +128,5 @@ function spell_form_submit($form, &$form_state) {
   $entity->is_revision = TRUE;
   entity_save($entity->entityType(), $entity);
 
+  $form_state['redirect'] = 'admin/dnd5/spells/manage';
 }

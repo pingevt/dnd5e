@@ -216,9 +216,44 @@ function spell_entity_access($op, $entity = NULL, $account = NULL) {
   return TRUE;
 }
 
-function spell_load() {
-
+/**
+ * Fetch a model object. Make sure that the wildcard you choose
+ * in the model entity definition fits the function name here.
+ *
+ * @param $model_id
+ *   Integer specifying the model id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $model object or FALSE if it cannot be loaded.
+ *
+ * @see model_load_multiple()
+ */
+function spell_load($spell_id, $reset = FALSE) {
+  $spells = spell_load_multiple(array($spell_id), array(), $reset);
+  return reset($spells);
 }
+
+
+/**
+ * Load multiple models based on certain conditions.
+ *
+ * @param $model_ids
+ *   An array of model IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {model} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of model objects, indexed by model_id.
+ *
+ * @see entity_load()
+ * @see model_load()
+ */
+function spell_load_multiple($spell_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('spell', $spell_ids, $conditions, $reset);
+}
+
 
 function spell_type_load($name) {
   return $name;
@@ -265,7 +300,7 @@ function spell_group_type_load($name) {
 
 function spell_group_uri($spell_group) {
   return array(
-    'path' => 'spell-group/' . $spell_group->spell_id,
+    'path' => 'spell-group/' . $spell_group->spell_group_id,
     'options' => array(
 
     ),

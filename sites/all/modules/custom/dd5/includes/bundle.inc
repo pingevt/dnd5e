@@ -1,6 +1,6 @@
 <?php
 
-class BundleUIController extends EntityDefaultUIController {
+class BundleUIController extends EntityBundleableUIController {
 
   public function __construct($entity_type, $entity_info) {
     parent::__construct($entity_type, $entity_info);
@@ -20,6 +20,17 @@ class BundleUIController extends EntityDefaultUIController {
     $id_count = count(explode('/', $this->path));
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
     $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
+
+    // add this back in.
+    $items[$this->path] = array(
+      'title' => $plural_label,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array($this->entityType . '_overview_form', $this->entityType),
+      'description' => 'Manage ' . $plural_label . '.',
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', $this->entityType),
+      'file' => 'includes/entity.ui.inc',
+    );
 
     $items[$this->type_path] = array(
       'title' => $this->entityInfo['label'] . ' bundles',
@@ -72,6 +83,30 @@ class BundleUIController extends EntityDefaultUIController {
         'type' => MENU_NORMAL_ITEM,
       );
     }
+
+    // RESET edit and clone etc urls
+
+    $items[$this->entityType . '/%character/edit'] = $items[$this->path . '/manage/' . $wildcard];
+    $items[$this->entityType . '/%character/edit']['title arguments'][1] = 1;
+    $items[$this->entityType . '/%character/edit']['page arguments'][1] = 1;
+    $items[$this->entityType . '/%character/edit']['access arguments'][5] = 1;
+    $items[$this->entityType . '/%character/edit']['type'] = MENU_LOCAL_TASK;
+    //unset($items[$this->path . '/manage/' . $wildcard]);
+    //unset($items[$this->path . '/manage/' . $wildcard . '/edit']);
+
+    $items[$this->entityType . '/%character/clone'] = $items[$this->path . '/manage/' . $wildcard . '/clone'];
+    $items[$this->entityType . '/%character/clone']['page arguments'][1] = 1;
+    $items[$this->entityType . '/%character/clone']['access arguments'][5] = 1;
+    $items[$this->entityType . '/%character/clone']['type'] = MENU_LOCAL_TASK;
+    //unset($items[$this->path . '/manage/' . $wildcard . '/clone']);
+
+    $items[$this->entityType . '/%character/%'] = $items[$this->path . '/manage/' . $wildcard . '/%'];
+    $items[$this->entityType . '/%character/%']['title arguments'][1] = 1;
+    $items[$this->entityType . '/%character/%']['page arguments'][1] = 1;
+    $items[$this->entityType . '/%character/%']['access arguments'][5] = 1;
+    //$items[$this->entityType . '/%character/%']['type'] = MENU_LOCAL_TASK;
+    //unset($items[$this->path . '/manage/' . $wildcard . '/%']);
+
 
     return $items;
   }

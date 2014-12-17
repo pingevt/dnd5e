@@ -1,6 +1,14 @@
 <?php
 
 class Character extends Entity {
+
+  static function spell_data_default() {
+    return array(
+      'prepared' => array(),
+      'cast' => array(),
+    );
+  }
+
   /**
    * Creates a new entity.
    *
@@ -13,27 +21,30 @@ class Character extends Entity {
   protected function defaultLabel() {
     return $this->name;
   }
+
+  function getSpells() {
+    $spells = array();
+
+    if (isset($this->field_spell_groups[LANGUAGE_NONE]) && is_array($this->field_spell_groups[LANGUAGE_NONE])) {
+      foreach ($this->field_spell_groups[LANGUAGE_NONE] as $i => $target_group) {
+        $spell_group = current(entity_load('spell_group', array($target_group['target_id'])));
+
+        foreach ($spell_group->field_spells[LANGUAGE_NONE] as $j => $target_spell) {
+          $spell = current(entity_load('spell', array($target_spell['target_id'])));
+          $spell->spell_group_title = $spell_group->name;
+          $spells[] = $spell;
+        }
+      }
+    }
+
+    return $spells;
+  }
+
 }
 
 class CharacterController extends EntityAPIController {
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $build = parent::buildContent($entity, $view_mode, $langcode, $content);
-
-
-/*
-    $entity->content = array();
-    $entity->content += field_attach_view($this->entityType, $entity, $view_mode);
-
-    $build = $entity->content;
-    unset($entity->content);
-    $build += array(
-      '#theme'     => $this->entityType,
-      '#element'   => $entity,
-      '#view_mode' => $view_mode,
-      '#language'  => LANGUAGE_NONE,
-    );
-dpm($build);
-*/
 
     return $build;
   }
@@ -251,5 +262,5 @@ function character_form_submit($form, &$form_state) {
   $entity->is_revision = TRUE;
   entity_save($entity->entityType(), $entity);
 
-  $form_state['redirect'] = 'admin/dnd5/character/admin';
+  $form_state['redirect'] = 'admin/dnd5/character/manage';
 }
