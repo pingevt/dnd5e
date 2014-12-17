@@ -84,5 +84,73 @@ function character_field_default_field_bases() {
     'type' => 'list_integer',
   );
 
+  // Exported field_base: 'field_spell_data'
+  $field_bases['field_spell_data'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_spell_data',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(),
+    'translatable' => 0,
+    'type' => 'text_long',
+  );
+
+  // Exported field_base: 'field_spell_groups'
+  $field_bases['field_spell_groups'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_spell_groups',
+    'foreign keys' => array(
+      'dd5_spell_group' => array(
+        'columns' => array(
+          'target_id' => 'spell_group_id',
+        ),
+        'table' => 'dd5_spell_group',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'target_type' => 'spell_group',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
+  );
+
   return $field_bases;
 }
