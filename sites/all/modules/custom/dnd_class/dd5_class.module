@@ -77,7 +77,7 @@ function dd5_class_entity_info() {
       'controller class' => 'CharClassUIController',
       'path' => 'admin/dnd5/class/manage',
       'type path' => 'admin/dnd5/class/class-type/manage',
-      'file' => 'includes/class.inc',
+      'file' => 'includes/charClass.inc',
       'menu wildcard' => '%class',
     ),
   );
