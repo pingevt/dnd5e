@@ -10,6 +10,47 @@
 function character_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_char_class'
+  $field_bases['field_char_class'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_char_class',
+    'foreign keys' => array(
+      'dd5_class' => array(
+        'columns' => array(
+          'target_id' => 'class_id',
+        ),
+        'table' => 'dd5_class',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'target_type' => 'class',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
+  );
+
   // Exported field_base: 'field_char_image'
   $field_bases['field_char_image'] = array(
     'active' => 1,

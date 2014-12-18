@@ -10,6 +10,44 @@
 function character_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'character-character-field_char_class'
+  $field_instances['character-character-field_char_class'] = array(
+    'bundle' => 'character',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 4,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'character',
+    'field_name' => 'field_char_class',
+    'label' => 'Class',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_select',
+      'weight' => 2,
+    ),
+  );
+
   // Exported field_instance: 'character-character-field_char_image'
   $field_instances['character-character-field_char_image'] = array(
     'bundle' => 'character',
@@ -132,7 +170,7 @@ function character_field_default_field_instances() {
         'rows' => 5,
       ),
       'type' => 'text_textarea',
-      'weight' => 3,
+      'weight' => 4,
     ),
   );
 
@@ -175,12 +213,13 @@ function character_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 2,
+      'weight' => 3,
     ),
   );
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('Class');
   t('Image');
   t('Level');
   t('Spell data');
