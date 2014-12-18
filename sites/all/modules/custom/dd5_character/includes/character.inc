@@ -58,6 +58,20 @@ class Character extends Entity {
     return $spells;
   }
 
+  function getSpellData() {
+    if (isset($this->field_spell_data[LANGUAGE_NONE][0]['value'])) {
+      return unserialize($this->field_spell_data[LANGUAGE_NONE][0]['value']);
+    }
+    else {
+      return Character::spell_data_default();
+    }
+  }
+
+  function saveSpellData($spell_data) {
+    $this->field_spell_data[LANGUAGE_NONE][0]['value'] = serialize($spell_data);
+    $this->save();
+  }
+
   function getSpellSlots() {
 
     if ($char_class = $this->getCharClass()) {
