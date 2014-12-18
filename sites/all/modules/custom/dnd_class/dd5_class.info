@@ -7,3 +7,6 @@ dependencies[] = dd5
 dependencies[] = entity_bundle_plugin
 
 files[] = includes/charClass.inc
+files[] = plugins/dd5_class_type/cleric.inc
+files[] = plugins/dd5_class_type/fighter.inc
+files[] = plugins/dd5_class_type/wizard.inc
