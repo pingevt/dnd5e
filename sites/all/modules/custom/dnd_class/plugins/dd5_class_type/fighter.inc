@@ -1,5 +1,5 @@
 <?php
-
+/*
 $plugin = array(
   'title' => t('Fighter'),
   'class' => 'FighterClass',
@@ -18,3 +18,4 @@ class FighterClass extends CharClass {
     return TRUE;
   }
 }
+*/
