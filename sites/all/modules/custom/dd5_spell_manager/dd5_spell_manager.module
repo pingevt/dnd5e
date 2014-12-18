@@ -418,6 +418,12 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#title' => t('Prepared'),
       '#title_display' => 'invisible',
       '#default_value' => $character_spell_data['prepared'][$spell->spell_id],
+      '#ajax' => array(
+        'callback' => 'spell_manager_form_replace',
+        'wrapper' => 'form-wrapper',
+        'method' => 'replace',
+        'effect' => 'fade',
+      ),
     );
 
     $row['group'] = array(
