@@ -1,5 +1,7 @@
 <?php
 
+include_once 'includes/charClass.inc';
+
 /**
  * Implements hook_menu().
  */
