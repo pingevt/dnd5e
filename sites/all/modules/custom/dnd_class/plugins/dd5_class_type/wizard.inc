@@ -1,5 +1,6 @@
 <?php
 
+/*
 $plugin = array(
   'title' => t('Wizard'),
   'class' => 'WizardClass',
@@ -288,3 +289,4 @@ class WizardClass extends CharClass {
     return $spell_slots;
   }
 }
+*/
