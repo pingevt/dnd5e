@@ -245,6 +245,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#type' => 'checkbox',
       '#title' => t('Prepared'),
       '#title_display' => 'invisible',
+      // TODO: fix if not present
       '#default_value' => $character_spell_data['prepared'][$spell->spell_id],
       '#limit_validation_errors' => FALSE,
       '#ajax' => array(
