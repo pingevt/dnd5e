@@ -8,5 +8,8 @@ dependencies[] = entity_bundle_plugin
 
 files[] = includes/charClass.inc
 files[] = plugins/dd5_class_type/cleric.inc
+files[] = plugins/dd5_class_type/ClericClass.class.php
 files[] = plugins/dd5_class_type/fighter.inc
+files[] = plugins/dd5_class_type/FighterClass.class.php
 files[] = plugins/dd5_class_type/wizard.inc
+files[] = plugins/dd5_class_type/WizardClass.class.php

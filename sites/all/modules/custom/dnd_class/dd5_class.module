@@ -1,6 +1,9 @@
 <?php
 
-include_once 'includes/charClass.inc';
+//include_once 'includes/charClass.inc';
+//include_once 'plugins/dd5_class_type/ClericClass.class.php';
+//include_once 'plugins/dd5_class_type/FighterClass.class.php';
+//include_once 'plugins/dd5_class_type/WizardClass.class.php';
 
 /**
  * Implements hook_menu().
@@ -146,6 +149,7 @@ function dd5_class_entity_info() {
 function dd5_char_class_get_type_plugins() {
   ctools_include('plugins');
   $plugins = ctools_get_plugins('dd5_class', 'dd5_class_type');
+//dpm($plugins);
   foreach ($plugins as $key => $plugin) {
     if (!class_exists($plugin['class'])) {
       // Invalid class specified.
@@ -181,115 +185,6 @@ function dd5_char_class_get_type_plugins() {
  */
 function class_entity_access($op, $entity = NULL, $account = NULL) {
   return dd5_entity_access($op, $entity, $account, 'class', 'classes');
-  /*
-  $rights = &drupal_static(__FUNCTION__, array());
-
-  if (!$entity || !in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
-    // If there was no entity to check against, or the $op was not one of the
-    // supported ones, we return access denied.
-    return FALSE;
-  }
-  // If no user object is supplied, the access check is for the current user.
-  if (empty($account)) {
-    $account = $GLOBALS['user'];
-  }
-
-  // $entity may be either an object or a node type. Since node types cannot be
-  // an integer, use either nid or type as the static cache id.
-
-  $cid = is_object($entity) ? $entity->class_id : $entity;
-
-  // If we've already checked access for this entity, user and op, return from
-  // cache.
-  if (isset($rights[$account->uid][$cid][$op])) {
-    return $rights[$account->uid][$cid][$op];
-  }
-
-  // If user cannot access site content, user cannot access dnd content
-  if (!user_access('access content', $account)) {
-    $rights[$account->uid][$cid][$op] = FALSE;
-    return FALSE;
-  }
-
-  // We grant access to the entity if both of the following conditions are met:
-  // - No modules say to deny access.
-  // - At least one module says to grant access.
-  $access = module_invoke_all('class_access', $entity, $op, $account);
-  if (in_array(NODE_ACCESS_DENY, $access, TRUE)) {
-    $rights[$account->uid][$cid][$op] = FALSE;
-    return FALSE;
-  }
-  elseif (in_array(NODE_ACCESS_ALLOW, $access, TRUE)) {
-    $rights[$account->uid][$cid][$op] = TRUE;
-    return TRUE;
-  }
-
-  // Check if authors can view their own unpublished nodes.
-  if ($op == 'view' && !$entity->status && user_access('view own unpublished dnd classes', $account) && $account->uid == $entity->uid && $entity->uid != 0) {
-    $rights[$account->uid][$cid][$op] = TRUE;
-    return TRUE;
-  }
-
-  switch($op) {
-  case 'view':
-    if (user_access('view all dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('view own dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    else {
-      $rights[$account->uid][$cid][$op] = FALSE;
-      return FALSE;
-    }
-    break;
-  case 'update':
-    if (user_access('edit all dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    else {
-      $rights[$account->uid][$cid][$op] = FALSE;
-      return FALSE;
-    }
-
-    break;
-  case 'delete':
-
-    if (user_access('edit all dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    else {
-      $rights[$account->uid][$cid][$op] = FALSE;
-      return FALSE;
-    }
-    break;
-
-  case 'create':
-    if (user_access('create dnd classes', $account)) {
-      $rights[$account->uid][$cid][$op] = TRUE;
-      return TRUE;
-    }
-    else {
-      $rights[$account->uid][$cid][$op] = FALSE;
-      return FALSE;
-    }
-    break;
-  }
-
-  return FALSE;
-  */
 }
 
 /**
