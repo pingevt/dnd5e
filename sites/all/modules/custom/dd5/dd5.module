@@ -48,6 +48,7 @@ function dd5_permission() {
 }
 
 function dd5_entity_access($op, $entity = NULL, $account = NULL, $entity_type = NULL, $entity_type_plural = NULL) {
+
   $rights = &drupal_static(__FUNCTION__, array());
 
   if (!$entity || !in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
@@ -62,11 +63,12 @@ function dd5_entity_access($op, $entity = NULL, $account = NULL, $entity_type = 
 
   // Set variables.
   if ($entity_type == NULL && is_object($entity)) {
-    $entity_type = $entity->entityType;
+    $entity_type = $entity->entityType();
   }
-  else {
+  elseif($entity_type == NULL) {
     $entity_type = $entity;
   }
+
   if ($entity_type_plural == NULL) {
     $entity_type_plural = $entity_type . 's';
   }
@@ -78,9 +80,14 @@ function dd5_entity_access($op, $entity = NULL, $account = NULL, $entity_type = 
 
   // $entity may be either an object or a entity type. Since entity types cannot be
   // an integer, use either nid or type as the static cache id.
-  $entity_info = entity_get_info($entity_type);
-  $cid = is_object($entity) ? $entity->{$entity_info['entity keys']['id']} : $entity;
+  if (is_object($entity)) {
+    $entity_info = entity_get_info($entity->entityType());
+  }
+  else {
+    $entity_info = entity_get_info($entity_type);
+  }
 
+  $cid = is_object($entity) ? $entity->entityType() . '-' . $entity->{$entity_info['entity keys']['id']} : $entity;
   // If we've already checked access for this entity, user and op, return from
   // cache.
   if (isset($rights[$account->uid][$entity_type][$cid][$op])) {
