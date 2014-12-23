@@ -27,8 +27,8 @@ class BundleUIController extends EntityBundleableUIController {
       'page callback' => 'drupal_get_form',
       'page arguments' => array($this->entityType . '_overview_form', $this->entityType),
       'description' => 'Manage ' . $plural_label . '.',
-      'access callback' => 'entity_access',
-      'access arguments' => array('view', $this->entityType),
+      'access callback' => 'dd5_entity_access',
+      'access arguments' => array('view', $this->entityType, NULL, $this->entityType, strtolower($plural_label)),
       'file' => 'includes/entity.ui.inc',
     );
 
@@ -36,8 +36,8 @@ class BundleUIController extends EntityBundleableUIController {
       'title' => $this->entityInfo['label'] . ' bundles',
       'description' => 'Bundles for ' . $plural_label,
       'page callback'  => 'drupal_get_form',
-      'page arguments'  => array('dd5_entity_type_page', $this->entityType),
-      'access callback'  => 'entity_access',
+      'page arguments'  => array('dd5_entity_type_page', $this->entityType, NULL, $this->entityType, strtolower($plural_label)),
+      'access callback'  => 'dd5_entity_access',
       'access arguments' => array('view', $this->entityType),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 10,
@@ -51,7 +51,7 @@ class BundleUIController extends EntityBundleableUIController {
       'page callback'  => 'dd5_entity_add_page',
       'page arguments'  => array($this->entityType),
       'access callback'  => 'dd5_entity_access',
-      'access arguments' => array('edit'),
+      'access arguments' => array('create', $this->entityType, NULL, $this->entityType, strtolower($plural_label)),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 20,
       //'type' => MENU_LOCAL_ACTION,
@@ -78,8 +78,8 @@ class BundleUIController extends EntityBundleableUIController {
         'title arguments' => array('add', $this->entityType, $type),
         'page callback' => 'entity_ui_get_form',
         'page arguments' => array($this->entityType, entity_create($this->entityType, array('type' => $type)), 'add'),
-        'access callback' => 'entity_access',
-        'access arguments' => array('create', $this->entityType),
+        'access callback' => 'dd5_entity_access',
+        'access arguments' => array('create', $this->entityType, NULL, $this->entityType, strtolower($plural_label)),
         'type' => MENU_NORMAL_ITEM,
       );
     }

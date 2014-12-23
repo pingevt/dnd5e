@@ -21,6 +21,50 @@ function dd5_character_menu() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function dd5_character_permission() {
+  return array(
+    'administer dnd characters' => array(
+      'title' => t('Administer D&D 5e characters'),
+      'description' => t('Perform administration tasks for D&D 5e characters.'),
+    ),
+    'view own dnd characters' => array(
+      'title' => t('View own D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'view own unpublished dnd characters' => array(
+      'title' => t('View own unpublished D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'view all dnd characters' => array(
+      'title' => t('View ALL D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'create dnd characters' => array(
+      'title' => t('Create D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'edit own dnd characters' => array(
+      'title' => t('Edit own D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'edit all dnd characters' => array(
+      'title' => t('Edit ALL D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'delete own dnd characters' => array(
+      'title' => t('Delete own D&D 5e characters'),
+      'description' => t(''),
+    ),
+    'delete all dnd characters' => array(
+      'title' => t('Delete ALL D&D 5e characters'),
+      'description' => t(''),
+    ),
+  );
+}
+
+/**
  * Implements hook_entity_info().
  */
 function dd5_character_entity_info() {
@@ -34,6 +78,7 @@ function dd5_character_entity_info() {
     'fieldable' => TRUE,
     'revisionable' => FALSE,
     'access callback' => 'character_entity_access',
+    //'access arguments' => array(''),
     'entity keys' => array(
       'id' => 'char_id',
       'label' => 'name',
@@ -93,7 +138,7 @@ function dd5_character_entity_info() {
  *   Whether access is allowed or not.
  */
 function character_entity_access($op, $entity = NULL, $account = NULL) {
-  return TRUE;
+  return dd5_entity_access($op, $entity, $account, 'character', 'characters');
 }
 
 /**

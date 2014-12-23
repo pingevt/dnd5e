@@ -23,11 +23,56 @@ function dd5_class_menu() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function dd5_class_permission() {
+  return array(
+    'administer dnd classes' => array(
+      'title' => t('Administer D&D 5e classes'),
+      'description' => t('Perform administration tasks for D&D 5e classes.'),
+    ),
+    'view own dnd classes' => array(
+      'title' => t('View own D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'view own unpublished dnd classes' => array(
+      'title' => t('View own unpublished D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'view all dnd classes' => array(
+      'title' => t('View ALL D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'create dnd classes' => array(
+      'title' => t('Create D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'edit own dnd classes' => array(
+      'title' => t('Edit own D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'edit all dnd classes' => array(
+      'title' => t('Edit ALL D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'delete own dnd classes' => array(
+      'title' => t('Delete own D&D 5e classes'),
+      'description' => t(''),
+    ),
+    'delete all dnd classes' => array(
+      'title' => t('Delete ALL D&D 5e classes'),
+      'description' => t(''),
+    ),
+  );
+}
+
+/**
  * Implements hook_entity_info().
  */
 function dd5_class_entity_info() {
   $items['class'] = array(
     'label' => t('Class'),
+    'plural label' => t('Classes'),
     'controller class' => 'CharClassController',
     'bundle plugin' => array(
       'plugin type' => 'dd5_class_type',
@@ -89,7 +134,8 @@ function dd5_class_entity_info() {
         'path' => 'admin/dnd5/class/class-type/manage/%class_type',
         'bundle argument' => 5,
         'real path' => 'admin/dnd5/class/class-type/manage/' . $plugin_name,
-        'access callback' => TRUE,
+        'access callback' => 'user_access',
+        'access arguments' => array('administer dnd classes'),
       ),
     );
   }
@@ -134,7 +180,116 @@ function dd5_char_class_get_type_plugins() {
  *   Whether access is allowed or not.
  */
 function class_entity_access($op, $entity = NULL, $account = NULL) {
-  return TRUE;
+  return dd5_entity_access($op, $entity, $account, 'class', 'classes');
+  /*
+  $rights = &drupal_static(__FUNCTION__, array());
+
+  if (!$entity || !in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+    // If there was no entity to check against, or the $op was not one of the
+    // supported ones, we return access denied.
+    return FALSE;
+  }
+  // If no user object is supplied, the access check is for the current user.
+  if (empty($account)) {
+    $account = $GLOBALS['user'];
+  }
+
+  // $entity may be either an object or a node type. Since node types cannot be
+  // an integer, use either nid or type as the static cache id.
+
+  $cid = is_object($entity) ? $entity->class_id : $entity;
+
+  // If we've already checked access for this entity, user and op, return from
+  // cache.
+  if (isset($rights[$account->uid][$cid][$op])) {
+    return $rights[$account->uid][$cid][$op];
+  }
+
+  // If user cannot access site content, user cannot access dnd content
+  if (!user_access('access content', $account)) {
+    $rights[$account->uid][$cid][$op] = FALSE;
+    return FALSE;
+  }
+
+  // We grant access to the entity if both of the following conditions are met:
+  // - No modules say to deny access.
+  // - At least one module says to grant access.
+  $access = module_invoke_all('class_access', $entity, $op, $account);
+  if (in_array(NODE_ACCESS_DENY, $access, TRUE)) {
+    $rights[$account->uid][$cid][$op] = FALSE;
+    return FALSE;
+  }
+  elseif (in_array(NODE_ACCESS_ALLOW, $access, TRUE)) {
+    $rights[$account->uid][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  // Check if authors can view their own unpublished nodes.
+  if ($op == 'view' && !$entity->status && user_access('view own unpublished dnd classes', $account) && $account->uid == $entity->uid && $entity->uid != 0) {
+    $rights[$account->uid][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  switch($op) {
+  case 'view':
+    if (user_access('view all dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('view own dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+  case 'update':
+    if (user_access('edit all dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$cid][$op] = FALSE;
+      return FALSE;
+    }
+
+    break;
+  case 'delete':
+
+    if (user_access('edit all dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+
+  case 'create':
+    if (user_access('create dnd classes', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+  }
+
+  return FALSE;
+  */
 }
 
 /**
@@ -218,7 +373,6 @@ function dd5_class_preprocess_entity(&$vars) {
     $class = $vars['class'];
   }
 }
-
 
 function dd5_class_ctools_plugin_type() {
   return array(

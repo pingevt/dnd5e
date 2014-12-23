@@ -20,9 +20,6 @@ function dd5_spell_menu() {
     'file' => 'system.admin.inc',
   );
 
-
-
-
   $items['admin/dnd5/spell-group'] = array(
     'title' => 'D&D Spell Groups',
     'description' => 'D&D Spells groupsrelated configuration.',
@@ -35,6 +32,50 @@ function dd5_spell_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function dd5_spell_permission() {
+  return array(
+    'administer dnd spells' => array(
+      'title' => t('Administer D&D 5e spells'),
+      'description' => t('Perform administration tasks for D&D 5e spells.'),
+    ),
+    'view own dnd spells' => array(
+      'title' => t('View own D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'view own unpublished dnd spells' => array(
+      'title' => t('View own unpublished D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'view all dnd spells' => array(
+      'title' => t('View ALL D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'create dnd spells' => array(
+      'title' => t('Create D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'edit own dnd spells' => array(
+      'title' => t('Edit own D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'edit all dnd spells' => array(
+      'title' => t('Edit ALL D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'delete own dnd spells' => array(
+      'title' => t('Delete own D&D 5e spells'),
+      'description' => t(''),
+    ),
+    'delete all dnd spells' => array(
+      'title' => t('Delete ALL D&D 5e spells'),
+      'description' => t(''),
+    ),
+  );
 }
 
 /**
@@ -213,7 +254,7 @@ function _spell_group_add_access() {
  *   Whether access is allowed or not.
  */
 function spell_entity_access($op, $entity = NULL, $account = NULL) {
-  return TRUE;
+  return dd5_entity_access($op, $entity, $account, 'spell', 'spells');
 }
 
 /**
@@ -286,7 +327,8 @@ function spell_uri($spell) {
  *   Whether access is allowed or not.
  */
 function spell_group_entity_access($op, $entity = NULL, $account = NULL) {
-  return TRUE;
+  // These will be the same as spells for now.
+  return dd5_entity_access($op, $entity, $account, 'spell', 'spells');
 }
 
 /**

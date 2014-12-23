@@ -34,6 +34,18 @@ function dd5_spell_manager_menu() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function dd5_spell_manager_permission() {
+  return array(
+    'use dnd spell manager' => array(
+      'title' => t('Use D&D 5e spell manager'),
+      'description' => t(''),
+    ),
+  );
+}
+
+/**
  * Implements hook_theme().
  */
 function dd5_spell_manager_theme($existing, $type, $theme, $path) {

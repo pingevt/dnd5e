@@ -1,6 +1,21 @@
 <?php
 
 /**
+ * Modules should return this value from hook_node_access() to allow access to a node.
+ */
+define('DND_ENTITY_ACCESS_ALLOW', 'allow');
+
+/**
+ * Modules should return this value from hook_node_access() to deny access to a node.
+ */
+define('DND_ENTITY_ACCESS_DENY', 'deny');
+
+/**
+ * Modules should return this value from hook_node_access() to not affect node access.
+ */
+define('DND_ENTITY_ACCESS_IGNORE', NULL);
+
+/**
  * Implements hook_menu().
  */
 function dd5_menu() {
@@ -16,8 +31,146 @@ function dd5_menu() {
   return $items;
 }
 
-function dd5_entity_access($op, $entity = NULL) {
-  return TRUE;
+/**
+ * Implements hook_permission().
+ */
+function dd5_permission() {
+  return array(
+    'access dd5 administration pages' => array(
+      'title' => t('Access dd5 administration pages'),
+      'description' => t('Perform administration tasks for my dd5.'),
+    ),
+    'administer dd5' => array(
+      'title' => t('Administer D&D 5e'),
+      'description' => t('Perform administration tasks for my dd5.'),
+    ),
+  );
+}
+
+function dd5_entity_access($op, $entity = NULL, $account = NULL, $entity_type = NULL, $entity_type_plural = NULL) {
+  $rights = &drupal_static(__FUNCTION__, array());
+
+  if (!$entity || !in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+    // If there was no entity to check against, or the $op was not one of the
+    // supported ones, we return access denied.
+    return FALSE;
+  }
+  // If no user object is supplied, the access check is for the current user.
+  if (empty($account)) {
+    $account = $GLOBALS['user'];
+  }
+
+  // Set variables.
+  if ($entity_type == NULL && is_object($entity)) {
+    $entity_type = $entity->entityType;
+  }
+  else {
+    $entity_type = $entity;
+  }
+  if ($entity_type_plural == NULL) {
+    $entity_type_plural = $entity_type . 's';
+  }
+
+  if ($entity_type == 'spell_group') {
+    $entity_type = 'spell';
+    $entity_type_plural = 'spells';
+  }
+
+  // $entity may be either an object or a entity type. Since entity types cannot be
+  // an integer, use either nid or type as the static cache id.
+  $entity_info = entity_get_info($entity_type);
+  $cid = is_object($entity) ? $entity->{$entity_info['entity keys']['id']} : $entity;
+
+  // If we've already checked access for this entity, user and op, return from
+  // cache.
+  if (isset($rights[$account->uid][$entity_type][$cid][$op])) {
+    return $rights[$account->uid][$entity_type][$cid][$op];
+  }
+
+  // If user cannot access site content, user cannot access dnd content
+  if (!user_access('access content', $account)) {
+    $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+    return FALSE;
+  }
+
+  // We grant access to the entity if both of the following conditions are met:
+  // - No modules say to deny access.
+  // - At least one module says to grant access.
+  $access = module_invoke_all($entity_type . '_access', $entity, $op, $account);
+  if (in_array(DND_ENTITY_ACCESS_DENY, $access, TRUE)) {
+    $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+    return FALSE;
+  }
+  elseif (in_array(DND_ENTITY_ACCESS_ALLOW, $access, TRUE)) {
+    $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  // Check if authors can view their own unpublished nodes.
+  if ($op == 'view' && user_access('view own unpublished dnd ' . $entity_type_plural, $account) && isset($entity->uid) && $account->uid == $entity->uid && $entity->uid != 0) {
+    $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  switch($op) {
+  case 'view':
+    if (user_access('view all dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('view own dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+  case 'update':
+    if (user_access('edit all dnd classes', $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+      return FALSE;
+    }
+
+    break;
+  case 'delete':
+
+    if (user_access('edit all dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif ($account->uid == $entity->uid && $entity->uid != 0 && user_access('edit own dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+
+  case 'create':
+    if (user_access('create dnd ' . $entity_type_plural, $account)) {
+      $rights[$account->uid][$entity_type][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    else {
+      $rights[$account->uid][$entity_type][$cid][$op] = FALSE;
+      return FALSE;
+    }
+    break;
+  }
+
+  return FALSE;
 }
 
 function dd5_entity_type_page($form, &$form_state, $entityType) {

@@ -129,7 +129,7 @@ class CharacterUIController extends BundleUIController {
       'page callback'  => 'character_page_view',
       'page arguments'  => array(1, 'full'),
       'access callback'  => 'dd5_entity_access',
-      'access arguments' => array('view', 1),
+      'access arguments' => array('view', 1, NULL, 'character', 'characters'),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 10,
     );

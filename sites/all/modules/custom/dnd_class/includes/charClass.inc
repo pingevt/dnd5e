@@ -76,11 +76,15 @@ class CharClassUIController extends BundleUIController {
 
     $items = parent::hook_menu();
 
+    $id_count = count(explode('/', $this->path));
+    $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
+    $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
+
     $items['class/%class'] = array(
       'page callback'  => 'class_page_view',
       'page arguments'  => array(1, 'full'),
       'access callback'  => 'dd5_entity_access',
-      'access arguments' => array('view', 1),
+      'access arguments' => array('view', 1, NULL, $this->entityType, strtolower($plural_label)),
       'type' => MENU_NORMAL_ITEM,
       'weight' => 10,
     );
