@@ -36,5 +36,5 @@ features[field_instance][] = spell-spell-field_spell_range
 features[field_instance][] = spell-spell-field_spell_type
 features[field_instance][] = spell_group-spell-field_spells
 features[field_instance][] = spell_group-spell_group-field_spells
-mtime = 1418748789
+mtime = 1418941753
 project path = sites/all/modules/features

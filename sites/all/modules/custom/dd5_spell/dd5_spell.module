@@ -110,6 +110,7 @@ function dd5_spell_entity_info() {
           'access callback' => TRUE,
         ),
       ),
+      /*
       'lleps' => array(
         'label' => t('Lleps'),
         'admin' => array(
@@ -119,6 +120,7 @@ function dd5_spell_entity_info() {
           'access callback' => TRUE,
         ),
       ),
+      */
     ),
     'view modes' => array(
       'full' => array(
