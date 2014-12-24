@@ -62,6 +62,8 @@ function dd5_spell_manager_theme($existing, $type, $theme, $path) {
 }
 
 function dd5_spell_manager_page($character) {
+  drupal_add_css(drupal_get_path('module', 'dd5_spell_manager') . '/css/spell-manager.css');
+
   $build = array();
 
   $build = drupal_get_form('character_spell_manager_form', $character);
@@ -89,7 +91,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
       }
     }
 
-    // re-key array
+    // Re-key array
     $character_spell_data['cast'] = array_values($character_spell_data['cast']);
 
     // Loop through spells.
@@ -272,6 +274,25 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#markup' => t($spell->spell_group_title),
     );
 
+    // Get components if necessary.
+    $component_markup = '';
+    $has_component = FALSE;
+    foreach ($spell->field_spell_components[LANGUAGE_NONE] as $field) {
+      if ($field['value'] == 'm') {
+        $has_component = TRUE;
+      }
+    }
+
+    if ($has_component) {
+      if ($spell->field_spell_component_consumed[LANGUAGE_NONE][0]['value'] == TRUE) {
+        $component_markup .= '<span class="consumed-label">CONSUMED</span>';
+      }
+
+      $comp_description = field_view_field('spell', $spell, 'field_spell_component_cost', array('label' => 'hidden'));
+      $component_markup .= render($comp_description);
+
+    }
+
     // Get description field value
     $description = field_view_field('spell', $spell, 'field_spell_description', array('label' => 'hidden'));
 
@@ -306,9 +327,8 @@ function character_spell_manager_form($form, &$form_state, $character) {
       $higher_lvl_fieldset = array();
     }
 
-
     $row['spell_description']['text'] = array(
-      '#markup' => '<h2>' . $spell->name . '</h2>' . render($description_fieldset) . render($higher_lvl_fieldset),
+      '#markup' => '<h2>' . $spell->name . '</h2>' . $component_markup . render($description_fieldset) . render($higher_lvl_fieldset),
     );
 
     $row['spell_id'] = array(
