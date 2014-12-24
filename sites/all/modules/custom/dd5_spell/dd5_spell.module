@@ -197,7 +197,13 @@ function dd5_spell_entity_info() {
 }
 
 function dd5_spell_entity_property_info() {
-  $info = array();
+  $info['spell']['properties'] = array(
+    'name' => array(
+      'label' => 'Spell name',
+      'description' => '',
+      'type' => 'string',
+    ),
+  );
 
   return $info;
 

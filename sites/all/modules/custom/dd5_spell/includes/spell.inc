@@ -48,7 +48,6 @@ class SpellUIController extends BundleUIController {
     parent::__construct($entity_type, $entity_info);
   }
 
-
   /**
    * Overrides hook_menu() defaults. Main reason for doing this is that
    * parent class hook_menu() is optimized for entity type administration.
@@ -60,6 +59,84 @@ class SpellUIController extends BundleUIController {
     return $items;
   }
 
+
+  /**
+   * Generates the render array for a overview table for arbitrary entities
+   * matching the given conditions.
+   *
+   * @param $conditions
+   *   An array of conditions as needed by entity_load().
+
+   * @return Array
+   *   A renderable array.
+   */
+  public function overviewTable($conditions = array()) {
+
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', $this->entityType);
+
+    // Add all conditions to query.
+    foreach ($conditions as $key => $value) {
+      $query->propertyCondition($key, $value);
+    }
+
+    if ($this->overviewPagerLimit) {
+      $query->pager($this->overviewPagerLimit);
+    }
+
+    // Add in sorting.
+    if (isset($_GET['sort']) && isset($_GET['order'])) {
+      switch ($_GET['order']) {
+      case 'Name':
+
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
+        break;
+      }
+    }
+
+
+    $results = $query->execute();
+
+    $ids = isset($results[$this->entityType]) ? array_keys($results[$this->entityType]) : array();
+    $entities = $ids ? entity_load($this->entityType, $ids) : array();
+    //ksort($entities);
+
+    $rows = array();
+    foreach ($entities as $entity) {
+      $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity);
+    }
+
+    $render = array(
+      '#theme' => 'table',
+      '#header' => $this->overviewTableHeaders($conditions, $rows),
+      '#rows' => $rows,
+      '#empty' => t('None.'),
+    );
+    return $render;
+  }
+
+  /**
+   * Generates the table headers for the overview table.
+   */
+  protected function overviewTableHeaders($conditions, $rows, $additional_header = array()) {
+    $order = array(
+      'desc' => 'asc',
+      'asc' => 'desc',
+    );
+
+    $header = $additional_header;
+    array_unshift($header, array(
+      'data' => 'Name',
+      'field' => 'name',
+      'sort' => (isset($_GET['order']) && $_GET['order'] == 'Name')? strtoupper($order[$_GET['sort']]) : 'ASC',
+    ));
+    if (!empty($this->entityInfo['exportable'])) {
+      $header[] = t('Status');
+    }
+    // Add operations with the right colspan.
+    $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount());
+    return $header;
+  }
 }
 
 function spell_form($form, &$form_state, $entity, $op = 'edit', $entity_type = NULL) {

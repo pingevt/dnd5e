@@ -119,6 +119,7 @@ function dd5_entity_access($op, $entity = NULL, $account = NULL, $entity_type = 
     return TRUE;
   }
 
+// TODO: if not an object need more to the if statements below.
   switch($op) {
   case 'view':
     if (user_access('view all dnd ' . $entity_type_plural, $account)) {
