@@ -1,7 +1,7 @@
 <?php
 
-class FighterClass extends CharClass {
-  public $description = "A master of martial combat, skilled with a variety of weapons and armor.";
+class RangerClass extends CharClass {
+  public $description = "A warrior who uses martial prowess and nature magic to combat threats on the edges of civilization.";
 
   // EntityBundlePluginProvideFieldsInterface
   static function fields() {

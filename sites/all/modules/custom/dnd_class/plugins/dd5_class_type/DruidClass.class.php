@@ -1,7 +1,7 @@
 <?php
 
-class ClericClass extends CharClass {
-  public $description = "A priestly champion who weilds devine magic in service of a higher power.";
+class DruidClass extends CharClass {
+  public $description = "A priest of the Olf Faith, weilding the powers of nature - moonlight and plant growth, fire and lightening - and adopting animal forms.";
 
   // EntityBundlePluginProvideFieldsInterface
   static function fields() {
@@ -281,36 +281,5 @@ class ClericClass extends CharClass {
     );
 
     return $spell_slots;
-  }
-
-  public function proficiencyBonus($lvl = NULL) {
-    $bonus = array(
-      0 => 2,
-      1 => 2,
-      2 => 2,
-      3 => 2,
-      4 => 3,
-      5 => 3,
-      6 => 3,
-      7 => 3,
-      8 => 4,
-      9 => 4,
-      10 => 4,
-      11 => 4,
-      12 => 5,
-      13 => 5,
-      14 => 5,
-      15 => 5,
-      16 => 6,
-      17 => 6,
-      18 => 6,
-      19 => 6,
-    );
-
-    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
-      return $bonus[($lvl -1)];
-    }
-
-    return $bonus;
   }
 }

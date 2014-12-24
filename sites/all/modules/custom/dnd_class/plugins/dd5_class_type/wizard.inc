@@ -3,5 +3,5 @@
 $plugin = array(
   'title' => t('Wizard'),
   'class' => 'WizardClass',
-  'weight' => 3,
+  'weight' => 12,
 );

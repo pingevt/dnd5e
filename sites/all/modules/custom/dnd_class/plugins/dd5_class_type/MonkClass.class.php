@@ -1,7 +1,7 @@
 <?php
 
-class FighterClass extends CharClass {
-  public $description = "A master of martial combat, skilled with a variety of weapons and armor.";
+class MonkClass extends CharClass {
+  public $description = "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection";
 
   // EntityBundlePluginProvideFieldsInterface
   static function fields() {
