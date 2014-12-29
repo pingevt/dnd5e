@@ -72,7 +72,8 @@ function dd5_spell_manager_page($character) {
 }
 
 function character_spell_manager_form($form, &$form_state, $character) {
-  // reload Character just in case.
+
+  // reload character just in case.
   $character = current(entity_load('character', array($character->char_id)));
 
   // Check previous submissions
@@ -154,6 +155,8 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#prefix' => '<div id="spell-slot-table-wrapper">',
       '#suffix' => '</div>',
     ),
+    'spell_filters' => array(),
+    'spell_order' => array(),
     'spells' => array(
       '#theme' => 'spell_table',
       '#header' => array(
@@ -204,6 +207,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
 
   $build_helper = array();
 
+  // Spell slot table
   foreach ($character_spell_data['cast'] as $z => $item) {
     $spell = current(entity_load('spell', array($item['spell'])));
 
@@ -249,6 +253,53 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#type' => 'hidden',
       '#value' => $z,
     );
+  }
+
+  // Spell table filters
+  $form['spell_filters'] = array(
+    '#type' => 'select',
+    '#title' => t('Filters'),
+    '#options' => array(
+      '' => 'No filter',
+      'prepared' => 'Only prepared',
+    ),
+    '#ajax' => array(
+      'callback' => 'spell_manager_form_replace',
+      'wrapper' => 'form-wrapper',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  if (isset($form_state['values']['spell_filters']) && !empty($form_state['values']['spell_filters'])) {
+
+    _filter_spells($character_spells, $character_spell_data, $form_state['values']['spell_filters']);
+  }
+
+  // Spell table order
+  $form['spell_order'] = array(
+    '#type' => 'select',
+    '#title' => t('Order'),
+    '#options' => array(
+      '' => 'No Order',
+      'spell_lvl' => 'Spell Level',
+      'alpha_asc' => 'Alpha Asc',
+      'alpha_desc' => 'Alpha Desc',
+      'spell_group' => 'Spell Group',
+    ),
+    '#ajax' => array(
+      'callback' => 'spell_manager_form_replace',
+      'wrapper' => 'form-wrapper',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  if (isset($form_state['values']['spell_order']) && !empty($form_state['values']['spell_order'])
+    && function_exists('_spell_order_' . $form_state['values']['spell_order'])) {
+
+    $func = '_spell_order_' . $form_state['values']['spell_order'];
+    uasort($character_spells, $func);
   }
 
   // Spells table
@@ -362,7 +413,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
       $row[$i] = $checkbox;
     }
 
-    $form['spells']['rows'][] = $row;
+    $form['spells']['rows'][$spell->spell_id] = $row;
   }
 
   $form['submit'] = array(
@@ -371,6 +422,43 @@ function character_spell_manager_form($form, &$form_state, $character) {
   );
 
   return $form;
+}
+
+/**
+ * Filter Spells in Spell manager table
+ */
+function _filter_spells(&$spells, $character_spell_data, $filter_type) {
+  switch($filter_type) {
+  case 'prepared':
+    foreach ($spells as $i => $spell) {
+      if (!isset($character_spell_data['prepared'][$spell->spell_id]) || $character_spell_data['prepared'][$spell->spell_id] == FALSE) {
+        unset($spells[$i]);
+      }
+    }
+    break;
+
+  default:
+    break;
+  }
+}
+
+function _spell_order_spell_lvl($val1, $val2) {
+  if ($val1->returnLvl() == $val2->returnLvl()) {
+    return 0;
+  }
+  return ($val1->returnLvl() < $val2->returnLvl()) ? -1 : 1;
+}
+
+function _spell_order_alpha_asc($val1, $val2) {
+  return strcasecmp($val1->name, $val2->name);
+}
+
+function _spell_order_alpha_desc($val1, $val2) {
+  return strcasecmp($val1->name, $val2->name) * -1;
+}
+
+function _spell_order_spell_group($val1, $val2) {
+  return strcasecmp($val1->spell_group_title, $val2->spell_group_title) * -1;
 }
 
 function character_spell_manager_form_validate(&$form, &$form_state) {
@@ -566,52 +654,5 @@ function theme_spell_table(&$variables) {
   // Redner the table and return.
   return drupal_render($content);
 }
-
-/*
-function toggle_spell_prepared($character, $spell, $value) {
-  $character_spell_data = isset($character->field_spell_data[LANGUAGE_NONE][0]['value'])? unserialize($character->field_spell_data[LANGUAGE_NONE][0]['value']) : Character::spell_data_default();
-
-  if ($value === 'true') {
-    $character_spell_data['prepared'][] = $spell->spell_id;
-    $character_spell_data['prepared'] = array_unique($character_spell_data['prepared']);
-    sort($character_spell_data['prepared']);
-  }
-  else {
-    $character_spell_data['prepared'] = array_diff($character_spell_data['prepared'], array($spell->spell_id));
-    sort($character_spell_data['prepared']);
-  }
-  $character->field_spell_data[LANGUAGE_NONE][0]['value'] = serialize($character_spell_data);
-
-  $character->save();
-
-  return drupal_json_output(array('status' => 'success'));
-}
-
-function toggle_spell_cast($character, $spell, $lvl, $delta, $value) {
-
-  $character_spell_data = isset($character->field_spell_data[LANGUAGE_NONE][0]['value'])? unserialize($character->field_spell_data[LANGUAGE_NONE][0]['value']) : Character::spell_data_default();
-
-  if ($value === 'true') {
-    //$character_spell_data['cast'][$lvl][$delta][] = $spell->spell_id;
-    //$character_spell_data['cast'][$lvl][$delta] = array_unique($character_spell_data['cast'][$lvl][$delta]);
-    $character_spell_data['cast'][] = array(
-      'spell' => $spell->spell_id,
-      'lvl' => $lvl,
-    );
-  }
-  /*
-  else {
-    $character_spell_data['cast'][$lvl][$delta] = array_diff($character_spell_data['cast'][$lvl][$delta], array($spell->spell_id));
-  }
-  */
-/*
-  $character->field_spell_data[LANGUAGE_NONE][0]['value'] = serialize($character_spell_data);
-
-  $character->save();
-
-  return drupal_json_output(array('status' => 'success'));
-}
-*/
-
 
 

@@ -13,6 +13,14 @@ class Spell extends Entity {
   protected function defaultLabel() {
     return $this->name;
   }
+
+  public function returnLvl() {
+    if (isset($this->field_spell_level[LANGUAGE_NONE][0]['value']) && is_numeric($this->field_spell_level[LANGUAGE_NONE][0]['value'])) {
+      return (int) $this->field_spell_level[LANGUAGE_NONE][0]['value'];
+    }
+
+    return 0;
+  }
 }
 
 class SpellController extends EntityAPIController {
