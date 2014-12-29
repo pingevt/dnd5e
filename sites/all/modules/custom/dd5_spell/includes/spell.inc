@@ -13,6 +13,14 @@ class Spell extends Entity {
   protected function defaultLabel() {
     return $this->name;
   }
+
+  public function returnLvl() {
+    if (isset($this->field_spell_level[LANGUAGE_NONE][0]['value']) && is_numeric($this->field_spell_level[LANGUAGE_NONE][0]['value'])) {
+      return (int) $this->field_spell_level[LANGUAGE_NONE][0]['value'];
+    }
+
+    return 0;
+  }
 }
 
 class SpellController extends EntityAPIController {
@@ -55,6 +63,15 @@ class SpellUIController extends BundleUIController {
   public function hook_menu() {
 
     $items = parent::hook_menu();
+
+    $items['spell/%spell'] = array(
+      'page callback'  => 'spell_page_view',
+      'page arguments'  => array(1, 'full'),
+      'access callback'  => 'dd5_entity_access',
+      'access arguments' => array('view', 1, NULL, 'spell', 'spells'),
+      'type' => MENU_NORMAL_ITEM,
+      'weight' => 10,
+    );
 
     return $items;
   }
@@ -137,6 +154,13 @@ class SpellUIController extends BundleUIController {
     $header[] = array('data' => t('Operations'), 'colspan' => $this->operationCount());
     return $header;
   }
+}
+
+function spell_page_view($spell, $view_mode) {
+  $controller = entity_get_controller('spell');
+  $content = $controller->view(array($spell->spell_id => $spell));
+  drupal_set_title($spell->name);
+  return $content;
 }
 
 function spell_form($form, &$form_state, $entity, $op = 'edit', $entity_type = NULL) {

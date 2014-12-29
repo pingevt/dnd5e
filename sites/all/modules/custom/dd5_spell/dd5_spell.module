@@ -391,3 +391,20 @@ function spell_group_uri($spell_group) {
 }
 
 
+function dd5_spell_theme() {
+  return array(
+    'spell' => array(
+      'render element' => 'elements',
+      'template' => 'templates/spell',
+    ),
+  );
+}
+
+function dd5_spell_preprocess_entity(&$vars) {
+
+  if ($vars['entity_type'] == 'spell') {
+    $spell = $vars['spell'];
+  }
+}
+
+
