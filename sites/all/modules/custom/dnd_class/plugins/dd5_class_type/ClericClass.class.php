@@ -15,12 +15,10 @@ class ClericClass extends CharClass {
     return TRUE;
   }
 
-  public function getSpellSlotsArray() {
+  public function getSpellSlots($lvl = NULL) {
 
     $spell_slots = array(
       0 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
         '1' => 2,
         '2' => 0,
         '3' => 0,
@@ -32,8 +30,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       1 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
         '1' => 2,
         '2' => 0,
         '3' => 0,
@@ -45,8 +41,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       2 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
         '1' => 4,
         '2' => 2,
         '3' => 0,
@@ -58,8 +52,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       3 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 0,
@@ -71,8 +63,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       4 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 3,
         '2' => 3,
         '3' => 2,
@@ -84,8 +74,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       5 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -97,8 +85,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       6 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -110,8 +96,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       7 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -123,8 +107,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       8 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -136,8 +118,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       9 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -149,8 +129,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       10 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -162,8 +140,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       11 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -175,8 +151,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       12 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -188,8 +162,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       13 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -201,8 +173,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       14 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -214,8 +184,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       15 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -227,8 +195,6 @@ class ClericClass extends CharClass {
         '9' => 0,
       ),
       16 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -240,8 +206,6 @@ class ClericClass extends CharClass {
         '9' => 1,
       ),
       17 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -253,8 +217,6 @@ class ClericClass extends CharClass {
         '9' => 1,
       ),
       18 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -266,8 +228,6 @@ class ClericClass extends CharClass {
         '9' => 1,
       ),
       19 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -280,10 +240,14 @@ class ClericClass extends CharClass {
       ),
     );
 
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $spell_slots[($lvl -1)];
+    }
+
     return $spell_slots;
   }
 
-  public function proficiencyBonus($lvl = NULL) {
+  public function getProficiencyBonus($lvl = NULL) {
     $bonus = array(
       0 => 2,
       1 => 2,
@@ -312,5 +276,36 @@ class ClericClass extends CharClass {
     }
 
     return $bonus;
+  }
+
+  public function getCantripsKnown($lvl = NULL) {
+    $cantrips_known = array(
+      0 => 3,
+      1 => 3,
+      2 => 3,
+      3 => 4,
+      4 => 4,
+      5 => 4,
+      6 => 4,
+      7 => 4,
+      8 => 4,
+      9 => 5,
+      10 => 5,
+      11 => 5,
+      12 => 5,
+      13 => 5,
+      14 => 5,
+      15 => 5,
+      16 => 5,
+      17 => 5,
+      18 => 5,
+      19 => 5,
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $cantrips_known[($lvl -1)];
+    }
+
+    return $cantrips_known;
   }
 }

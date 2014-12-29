@@ -75,7 +75,7 @@ class Character extends Entity {
   function getSpellSlots() {
 
     if ($char_class = $this->getCharClass()) {
-      return $char_class->getSpellSlotsArray();
+      return $char_class->getSpellSlots();
     }
 
     return FALSE;

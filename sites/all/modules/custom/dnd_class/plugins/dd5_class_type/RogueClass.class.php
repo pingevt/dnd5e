@@ -15,7 +15,7 @@ class RogueClass extends CharClass {
     return TRUE;
   }
 
-  public function getSpellSlotsArray() {
+  public function getSpellSlots($lvl = NULL) {
 
     $spell_slots = array(
       0 => array(
@@ -280,6 +280,72 @@ class RogueClass extends CharClass {
       ),
     );
 
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $spell_slots[($lvl -1)];
+    }
+
     return $spell_slots;
+  }
+
+  public function getProficiencyBonus($lvl = NULL) {
+    $bonus = array(
+      0 => 2,
+      1 => 2,
+      2 => 2,
+      3 => 2,
+      4 => 3,
+      5 => 3,
+      6 => 3,
+      7 => 3,
+      8 => 4,
+      9 => 4,
+      10 => 4,
+      11 => 4,
+      12 => 5,
+      13 => 5,
+      14 => 5,
+      15 => 5,
+      16 => 6,
+      17 => 6,
+      18 => 6,
+      19 => 6,
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $bonus[($lvl -1)];
+    }
+
+    return $bonus;
+  }
+
+  public function getSneakAttack($lvl = NULL) {
+    $sneak_attack = array(
+      0 => '1d6',
+      1 => '1d6',
+      2 => '2d6',
+      3 => '2d6',
+      4 => '3d6',
+      5 => '3d6',
+      6 => '4d6',
+      7 => '4d6',
+      8 => '5d6',
+      9 => '5d6',
+      10 => '6d6',
+      11 => '6d6',
+      12 => '7d6',
+      13 => '7d6',
+      14 => '8d6',
+      15 => '8d6',
+      16 => '9d6',
+      17 => '9d6',
+      18 => '10d6',
+      19 => '10d6',
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $sneak_attack[($lvl -1)];
+    }
+
+    return $sneak_attack;
   }
 }

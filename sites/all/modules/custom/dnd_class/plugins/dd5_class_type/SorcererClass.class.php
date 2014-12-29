@@ -15,12 +15,133 @@ class SorcererClass extends CharClass {
     return TRUE;
   }
 
-  public function getSpellSlotsArray() {
+  public function getProficiencyBonus($lvl = NULL) {
+    $bonus = array(
+      0 => 2,
+      1 => 2,
+      2 => 2,
+      3 => 2,
+      4 => 3,
+      5 => 3,
+      6 => 3,
+      7 => 3,
+      8 => 4,
+      9 => 4,
+      10 => 4,
+      11 => 4,
+      12 => 5,
+      13 => 5,
+      14 => 5,
+      15 => 5,
+      16 => 6,
+      17 => 6,
+      18 => 6,
+      19 => 6,
+    );
 
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $bonus[($lvl -1)];
+    }
+
+    return $bonus;
+  }
+
+  public function getSorceryPoints($lvl = NULL) {
+    $sorcery_points = array(
+      0 => 0,
+      1 => 2,
+      2 => 3,
+      3 => 4,
+      4 => 5,
+      5 => 6,
+      6 => 7,
+      7 => 8,
+      8 => 9,
+      9 => 10,
+      10 => 11,
+      11 => 12,
+      12 => 13,
+      13 => 14,
+      14 => 15,
+      15 => 16,
+      16 => 17,
+      17 => 18,
+      18 => 19,
+      19 => 20,
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $sorcery_points[($lvl -1)];
+    }
+
+    return $sorcery_points;
+  }
+
+  public function getCantripsKnown($lvl = NULL) {
+    $cantrips_known = array(
+      0 => 4,
+      1 => 4,
+      2 => 4,
+      3 => 5,
+      4 => 5,
+      5 => 5,
+      6 => 5,
+      7 => 5,
+      8 => 5,
+      9 => 6,
+      10 => 6,
+      11 => 6,
+      12 => 6,
+      13 => 6,
+      14 => 6,
+      15 => 6,
+      16 => 6,
+      17 => 6,
+      18 => 6,
+      19 => 6,
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $cantrips_known[($lvl -1)];
+    }
+
+    return $cantrips_known;
+  }
+
+  public function getSpellsKnown($lvl = NULL) {
+    $spells_known = array(
+      0 => 2,
+      1 => 3,
+      2 => 4,
+      3 => 5,
+      4 => 6,
+      5 => 7,
+      6 => 8,
+      7 => 9,
+      8 => 10,
+      9 => 11,
+      10 => 12,
+      11 => 12,
+      12 => 13,
+      13 => 13,
+      14 => 14,
+      15 => 14,
+      16 => 15,
+      17 => 15,
+      18 => 15,
+      19 => 15,
+    );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $spells_known[($lvl -1)];
+    }
+
+    return $spells_known;
+  }
+
+  public function getSpellSlots($lvl = NULL) {
     $spell_slots = array(
       0 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
         '1' => 2,
         '2' => 0,
         '3' => 0,
@@ -32,9 +153,7 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       1 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
-        '1' => 2,
+        '1' => 3,
         '2' => 0,
         '3' => 0,
         '4' => 0,
@@ -45,8 +164,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       2 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 3,
         '1' => 4,
         '2' => 2,
         '3' => 0,
@@ -58,8 +175,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       3 => array(
-        'proficiency_bonus' => 2,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 0,
@@ -71,9 +186,7 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       4 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
-        '1' => 3,
+        '1' => 4,
         '2' => 3,
         '3' => 2,
         '4' => 0,
@@ -84,8 +197,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       5 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -97,8 +208,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       6 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -110,8 +219,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       7 => array(
-        'proficiency_bonus' => 3,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -123,8 +230,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       8 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 4,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -136,8 +241,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       9 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -149,8 +252,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       10 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -162,8 +263,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       11 => array(
-        'proficiency_bonus' => 4,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -175,8 +274,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       12 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -188,8 +285,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       13 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -201,8 +296,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       14 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -214,8 +307,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       15 => array(
-        'proficiency_bonus' => 5,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -227,8 +318,6 @@ class SorcererClass extends CharClass {
         '9' => 0,
       ),
       16 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -240,8 +329,6 @@ class SorcererClass extends CharClass {
         '9' => 1,
       ),
       17 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -253,8 +340,6 @@ class SorcererClass extends CharClass {
         '9' => 1,
       ),
       18 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -266,8 +351,6 @@ class SorcererClass extends CharClass {
         '9' => 1,
       ),
       19 => array(
-        'proficiency_bonus' => 6,
-        'cantrips known' => 5,
         '1' => 4,
         '2' => 3,
         '3' => 3,
@@ -279,6 +362,10 @@ class SorcererClass extends CharClass {
         '9' => 1,
       ),
     );
+
+    if ($lvl != NULL && $lvl >= 1 && $lvl <= 20) {
+      return $spell_slots[($lvl -1)];
+    }
 
     return $spell_slots;
   }
