@@ -15,7 +15,7 @@ class BardClass extends CharClass {
     return TRUE;
   }
 
-  public function getSpellSlots() {
+  public function getSpellSlots($lvl = NULL) {
 
     $spell_slots = array(
       0 => array(

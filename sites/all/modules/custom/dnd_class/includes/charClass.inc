@@ -546,6 +546,39 @@ class CharClass extends Entity implements EntityBundlePluginProvideFieldsInterfa
     return $sorcery_points;
   }
 
+  /**
+   * TRAITS
+   */
+  public function classTraits() {
+    return array();
+  }
+
+  public function classTraitDefaults($traits = array()) {
+
+    // Add in defaults.
+    foreach ($traits as &$trait) {
+      $trait = array_replace_recursive(array(
+        'name' => t(''),
+        'descr' => t(''),
+        'hooks' => array(
+          'form' => FALSE,
+          'ability_score' => FALSE,
+          'hit_dice' => FALSE,
+          'hit_point' => FALSE,
+          'speed' => FALSE,
+          'proficiency' => FALSE,
+          'language' => FALSE,
+          'saving_throws' => FALSE,
+          'class_traits' => FALSE,
+        ),
+        'show on char sheet' => FALSE,
+        'char cheet section' => '',
+      ), $trait);
+    }
+
+    return $traits;
+  }
+
 }
 
 class CharClassController extends EntityBundlePluginEntityController {

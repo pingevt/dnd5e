@@ -15,6 +15,164 @@ class ClericClass extends CharClass {
     return TRUE;
   }
 
+  public function classTraits() {
+    $traits = parent::classTraits();
+
+    $traits['hit_dice'] = array(
+      'name' => t('Hit Dice'),
+      'descr' => t('1d8 per cleric level'),
+      'hooks' => array(
+        'hit_dice' => TRUE,
+      ),
+    );
+
+    $traits['hit_points_first'] = array(
+      'name' => t('Hit Points at 1st Level'),
+      'descr' => t('8 + your Constitution modifier.'),
+      'hooks' => array(
+        'hit_point' => TRUE,
+      ),
+    );
+
+    $traits['hit_points_higher'] = array(
+      'name' => t('Hit Points at Higher Levels'),
+      'descr' => t('1d8 (or 5) + your Constitution modifier per cleric level after 1st.'),
+      'hooks' => array(
+        'hit_point' => TRUE,
+      ),
+    );
+
+    $traits['armor'] = array(
+      'name' => t('Armor'),
+      'descr' => t('Light Armore, medium armor, shields'),
+      'hooks' => array(
+        'proficiency' => TRUE,
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'proficiency_language',
+    );
+
+    $traits['weapons'] = array(
+      'name' => t('Weapons'),
+      'descr' => t('All simple weapons'),
+      'hooks' => array(
+        'proficiency' => TRUE,
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'proficiency_language',
+    );
+
+    $traits['tools'] = array(
+      'name' => t('Tools'),
+      'descr' => t('None'),
+      'hooks' => array(
+        'proficiency' => FALSE,
+      ),
+      'show on char sheet' => FALSE,
+    );
+
+    $traits['saving_throws'] = array(
+      'name' => t('Saving Throws'),
+      'descr' => t('Wisdom, Charisma'),
+      'hooks' => array(
+        'saving_throws' => TRUE,
+      ),
+      'show on char sheet' => FALSE,
+    );
+
+    $traits['skills'] = array(
+      'name' => t('Skills'),
+      'descr' => t('Choose two from History, Insight, Medicine, Persuasion, and Religion.'),
+      'hooks' => array(
+        'form' => TRUE,
+        'skills' => TRUE,
+      ),
+      'show on char sheet' => FALSE,
+    );
+
+    $traits['equipment'] = array(
+      'name' => t('Equipment'),
+      'descr' => t('You start with the following equipment, in addition to the equipment granted by your background: '),
+      'hooks' => array(
+        'form' => TRUE,
+        'equipment' => TRUE,
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'equipment',
+    );
+
+    $traits['ritual_casting'] = array(
+      'name' => t('Ritual Casting'),
+      'descr' => t('You can cast a cleric spell as a ritual if that spell has the ritual tag and you have that spell prepared.'),
+      'hooks' => array(
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'attacks_spellcasting',
+    );
+
+    $traits['spellcasting_focus'] = array(
+      'name' => t('Spellcasting Focus'),
+      'descr' => t('You can use a holy symbol (found in Chapter 5) as a spellcasting focus for your cleric spells.'),
+      'hooks' => array(
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'attacks_spellcasting',
+    );
+
+    $traits['devine_domain'] = array(
+      'name' => t('Devine Domain'),
+      'descr' => t(''),
+      'hooks' => array(
+        'form' => TRUE,
+        'class_traits' => TRUE,
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'attacks_spellcasting',
+    );
+
+    $traits['cd_turn_undead'] = array(
+      'name' => t('Channel Divinity: Turn Undead'),
+      'descr' => t(''),
+      'hooks' => array(
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'attacks_spellcasting',
+    );
+
+    $traits['destroy_undead'] = array(
+      'name' => t('Destroy Undead'),
+      'descr' => t(''),
+      'hooks' => array(
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'features_traits',
+    );
+
+    $traits['devine_intervention'] = array(
+      'name' => t('Devine Intervention'),
+      'descr' => t(''),
+      'hooks' => array(
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'features_traits',
+    );
+
+    $traits['ability_score_improvement'] = array(
+      'name' => t('Ability Score Improvment'),
+      'descr' => t('When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\'t increase an ability score above 20 using this feature.'),
+      'hooks' => array(
+        'form' => TRUE,
+        'ability_score' => TRUE,
+      ),
+      'show on char sheet' => TRUE,
+      'char cheet section' => 'features_traits',
+    );
+
+    $traits = parent::classTraitDefaults($traits);
+
+    return $traits;
+  }
+
   public function getSpellSlots($lvl = NULL) {
 
     $spell_slots = array(

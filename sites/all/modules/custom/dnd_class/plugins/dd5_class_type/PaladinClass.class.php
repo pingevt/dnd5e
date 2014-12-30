@@ -46,7 +46,7 @@ class PaladinClass extends CharClass {
     return $bonus;
   }
 
-  public function getSpellSlots() {
+  public function getSpellSlots($lvl = NULL) {
     $spell_slots = array(
       0 => array(
         '1' => 0,
