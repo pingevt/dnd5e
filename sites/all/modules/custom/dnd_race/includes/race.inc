@@ -42,4 +42,19 @@ class DNDRace {
       'charisma' => 0,
     );
   }
+
+  public function characterForm($form, &$form_state, &$character) {
+    $traits = $this->racialTraits();
+
+    foreach ($traits as $trait_id => $trait) {
+      if ($trait['hooks']['form'] == TRUE) {
+        $func = $trait_id . '_form';
+        if (method_exists($this, $func)) {
+          $form = $this->$func($form, $form_state, $character);
+        }
+      }
+    }
+
+    return $form;
+  }
 }

@@ -30,6 +30,15 @@ class Character extends Entity {
     return FALSE;
   }
 
+  function getRaceData() {
+    if (isset($this->field_char_race_data[LANGUAGE_NONE][0]['value'])) {
+      return unserialize($this->field_char_race_data[LANGUAGE_NONE][0]['value']);
+    }
+    else {
+      return array();
+    }
+  }
+
   function getCharClass() {
     if (isset($this->field_char_class[LANGUAGE_NONE][0]['target_id'])) {
       $char_class = current(entity_load('class', array($this->field_char_class[LANGUAGE_NONE][0]['target_id'])));
@@ -249,6 +258,10 @@ function character_page_view($character, $view_mode) {
 }
 
 function character_form($form, &$form_state, $entity, $op = 'edit', $entity_type = NULL) {
+dpm($form);
+dpm($form_state);
+dpm($entity);
+/*
   $entity_info = entity_get_info($entity->entityType());
   $property_info = entity_get_property_info($entity->entityType());
 
@@ -289,20 +302,114 @@ function character_form($form, &$form_state, $entity, $op = 'edit', $entity_type
   $form['#validate'] = array('character_form_validate');
   $form['#submit'] = array('character_form_submit');
   return $form;
+*/
+  if (!isset($form_state['#entity'])) {
+    $form_state['#entity'] = $entity;
+  }
 
+  if (isset($form_state['values'])) {
+    $currstep = $form_state['step'] + 1;
+  }else {
+    $currstep = 1;
+  }
+  $form_state['step'] = $currstep;
+
+$form['page'] = array(
+  '#markup' => $currstep,
+);
+
+  switch ($currstep) {
+  /**
+   * Step 1: choose race
+   */
+  case 1:
+    ctools_include('plugins');
+    $races = ctools_get_plugins('dnd_race', 'dnd_race');
+
+    $available_races = array();
+    foreach ($races as $race) {
+      $available_races[$race['name']] = $race['title'];
+    }
+
+    // Add field_char_race to form.
+    field_attach_form($entity_type, $entity, $form, $form_state, LANGUAGE_NONE, array('field_name' => 'field_char_race'));
+    // Tweak a few values.
+    $form['field_char_race'][LANGUAGE_NONE][0]['value']['#type'] = 'select';
+    $form['field_char_race'][LANGUAGE_NONE][0]['value']['#options'] = $available_races;
+    $form['field_char_race'][LANGUAGE_NONE][0]['value']['#size'] = 1;
+    $form['field_char_race'][LANGUAGE_NONE][0]['value']['#default_option'] = (isset($entity->field_char_race[LANGUAGE_NONE][0]['value']))? $entity->field_char_race[LANGUAGE_NONE][0]['value'] : NULL;
+
+    // Add field_char_race_data to form.
+    field_attach_form($entity_type, $entity, $form, $form_state, LANGUAGE_NONE, array('field_name' => 'field_char_race_data'));
+    // Tweak a few values.
+    $form['field_char_race_data']['#access'] = FALSE;
+    $form['field_char_race_data'][LANGUAGE_NONE][0]['value']['#value'] = serialize(array());
+
+    break;
+
+  /**
+   * Step 2: add race forms.
+   */
+  case 2:
+    $race_plugin = ctools_get_plugins('dnd_race', 'dnd_race', $entity->field_char_race[LANGUAGE_NONE][0]['value']);
+    $race = new $race_plugin['class'];
+
+    $form = $race->characterForm($form, $form_state, $entity);
+
+    break;
+  }
+
+
+
+  $form['actions'] = array(
+    '#type' => 'actions',
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+  );
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => 'Cancel',
+  );
+  $form['#validate'][] = 'character_form_validate';
+  $form['#submit'][] = 'character_form_submit';
+  return $form;
 }
 
 function character_form_validate($form, &$form_state) {
-  $entity = $form['#entity'];
-  field_attach_form_validate($entity->entityType(), $entity, $form, $form_state);
 
+  $entity = $form_state['#entity'];
+
+  switch ($form_state['step']) {
+  case '1':
+    field_attach_form_validate($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race'));
+    break;
+  case '2':
+    break;
+  default:
+    break;
+  }
 }
 
 function character_form_submit($form, &$form_state) {
-  $entity = $form['#entity'];
-  entity_form_submit_build_entity($entity->entityType(), $entity, $form, $form_state);
-  $entity->is_revision = TRUE;
-  entity_save($entity->entityType(), $entity);
 
-  $form_state['redirect'] = 'admin/dnd5/character/manage';
+  $form_state['storedvalues'][$form_state['step']] = $form_state['values'];
+  if ($form_state['step'] + 1 != 10) {
+      $form_state['rebuild'] = TRUE;
+  }
+
+  $entity = $form_state['#entity'];
+
+  switch ($form_state['step']) {
+  case '1':
+    field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race'));
+    field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race_data'));
+    $form_state['#entity'] = $entity;
+    break;
+  case '2':
+    break;
+  default:
+    break;
+  }
 }

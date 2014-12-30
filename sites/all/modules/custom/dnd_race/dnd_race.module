@@ -5,7 +5,7 @@
  */
 function dnd_race_ctools_plugin_type() {
   return array(
-    'dd5_race' => array(
+    'dnd_race' => array(
       'use hooks' => TRUE,
     ),
   );

@@ -125,4 +125,94 @@ class Dwarf extends DNDRace {
 
     return $array;
   }
+
+
+
+
+
+
+
+
+  /**
+   * Tool Proficiency Form
+   */
+  protected function tool_proficiency_form($form, &$form_state, &$character) {
+    $char = $form_state['#entity'];
+    $race_data = $char->getRaceData();
+
+    $form['tool_proficiency'] = array(
+      '#type' => 'select',
+      '#title' => 'Tool Proficiency',
+      '#description' => t('You gain proficiency with the artisan\'s tools of your choice'),
+      '#options' => array(
+        '' => '-- Pick tools --',
+        'smith' => 'Smith\'s tools',
+        'brewer' => 'Brewer\'s supplies',
+        'mason' => 'Mason\'s tools',
+      ),
+      '#element_validate' => array(array('Dwarf', 'tool_proficiency_form_validate')),
+      '#default_value' => isset($race_data['subrace'])? $race_data['subrace'] : NULL,
+    );
+
+    $form['#submit'][] = array('Dwarf', 'tool_proficiency_form_submit');
+
+    return $form;
+  }
+
+  public static function tool_proficiency_form_validate($element, &$form_state, &$form) {
+    if ($form_state['values']['tool_proficiency'] == NULL || empty($form_state['values']['tool_proficiency'])) {
+      form_set_error(implode('][', $element['#array_parents']), 'You must pick a tool proficiency.');
+    }
+  }
+
+  public static function tool_proficiency_form_submit($form, &$form_state) {
+    $char = $form_state['#entity'];
+
+    $race_data = $char->getRaceData();
+
+    $race_data['tool_proficiency'] = $form_state['values']['tool_proficiency'];
+
+    $form_state['#entity']->field_char_race_data[LANGUAGE_NONE][0]['value'] = serialize($race_data);
+  }
+
+  /**
+   * Subrace Form
+   */
+  protected function subrace_form($form, &$form_state, &$character) {
+    $char = $form_state['#entity'];
+    $race_data = $char->getRaceData();
+
+    $form['subrace'] = array(
+      '#type' => 'select',
+      '#title' => 'Dwarf subrace',
+      '#description' => t('Two main subraces of dwarves populate the worlds of D&D: hill dwarves and mountain dwarves.'),
+      '#options' => array(
+        '' => '-- Pick Subrace --',
+        'hill' => 'Hill Dwarves',
+        'mountain' => 'Mountain Dwarves',
+      ),
+      '#element_validate' => array(array('Dwarf', 'subrace_form_validate')),
+      '#default_value' => isset($race_data['subrace'])? $race_data['subrace'] : NULL,
+    );
+
+    $form['#submit'][] = array('Dwarf', 'subrace_form_submit');
+
+    return $form;
+  }
+
+  public static function subrace_form_validate($element, &$form_state, &$form) {
+    if ($form_state['values']['subrace'] == NULL || empty($form_state['values']['subrace'])) {
+      form_set_error(implode('][', $element['#array_parents']), 'You must pick a subrace.');
+    }
+  }
+
+  public static function subrace_form_submit($form, &$form_state) {
+    $char = $form_state['#entity'];
+
+    $race_data = $char->getRaceData();
+
+    $race_data['subrace'] = $form_state['values']['subrace'];
+
+    $form_state['#entity']->field_char_race_data[LANGUAGE_NONE][0]['value'] = serialize($race_data);
+  }
 }
