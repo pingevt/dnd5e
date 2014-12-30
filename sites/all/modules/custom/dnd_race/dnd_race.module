@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_ctools_plugin_type().
+ */
+function dnd_race_ctools_plugin_type() {
+  return array(
+    'dd5_race' => array(
+      'use hooks' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function dnd_race_ctools_plugin_directory($module, $plugin) {
+  if (($module == 'dnd_race') && ($plugin == 'dnd_race')) {
+    return 'plugins/dnd_race';
+  }
+}
+

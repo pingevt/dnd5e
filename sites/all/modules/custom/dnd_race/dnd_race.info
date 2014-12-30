@@ -1,0 +1,9 @@
+name = D&D 5e Race
+description = D&D 5e Race class and functions.
+package = D&D 5e
+core = 7.x
+
+dependencies[] = dd5
+
+files[] = includes/race.inc
+files[] = plugins/dnd_race/dwarf.inc
