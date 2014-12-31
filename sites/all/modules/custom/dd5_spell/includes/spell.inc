@@ -21,6 +21,13 @@ class Spell extends Entity {
 
     return 0;
   }
+
+  public function getSpellType() {
+    if (isset($this->field_spell_type[LANGUAGE_NONE][0]['value'])) {
+      return $this->field_spell_type[LANGUAGE_NONE][0]['value'];
+    }
+    return NULL;
+  }
 }
 
 class SpellController extends EntityAPIController {
@@ -54,6 +61,8 @@ class SpellUIController extends BundleUIController {
 
   public function __construct($entity_type, $entity_info) {
     parent::__construct($entity_type, $entity_info);
+
+    $this->overviewPagerLimit = 50;
   }
 
   /**
@@ -105,8 +114,13 @@ class SpellUIController extends BundleUIController {
     if (isset($_GET['sort']) && isset($_GET['order'])) {
       switch ($_GET['order']) {
       case 'Name':
-
         $query->propertyOrderBy('name', strtoupper($_GET['sort']));
+        break;
+      case 'Level':
+        $query->fieldOrderBy('field_spell_level', 'value', strtoupper($_GET['sort']));
+        break;
+      case 'Type':
+        $query->fieldOrderBy('field_spell_type', 'value', strtoupper($_GET['sort']));
         break;
       }
     }
@@ -120,12 +134,36 @@ class SpellUIController extends BundleUIController {
 
     $rows = array();
     foreach ($entities as $entity) {
-      $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity);
+      $lvl = $entity->returnLvl();
+
+      $additional_cols = array(
+        ($lvl == 0)? 'Cantrip' : $lvl,
+        $entity->getSpellType(),
+      );
+      $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity, $additional_cols);
     }
+
+    // Additional headers.
+    $order = array(
+      'desc' => 'asc',
+      'asc' => 'desc',
+    );
+    $additional_headers = array(
+      array(
+        'data' => 'Level',
+        'field' => 'level',
+        'sort' => (isset($_GET['order']) && $_GET['order'] == 'Level')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      ),
+      array(
+        'data' => 'Type',
+        'field' => 'type',
+        'sort' => (isset($_GET['order']) && $_GET['order'] == 'Type')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      )
+    );
 
     $render = array(
       '#theme' => 'table',
-      '#header' => $this->overviewTableHeaders($conditions, $rows),
+      '#header' => $this->overviewTableHeaders($conditions, $rows, $additional_headers),
       '#rows' => $rows,
       '#empty' => t('None.'),
     );
