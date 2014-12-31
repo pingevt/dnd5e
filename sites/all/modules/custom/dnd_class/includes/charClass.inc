@@ -579,6 +579,24 @@ class CharClass extends Entity implements EntityBundlePluginProvideFieldsInterfa
     return $traits;
   }
 
+  public function characterForm($form, &$form_state, &$char) {
+    $traits = $this->classTraits($char);
+
+    foreach ($traits as $trait_id => $trait) {
+      if ($trait['hooks']['form'] == TRUE) {
+        $func = $trait_id . '_form';
+        if (method_exists($this, $func)) {
+          $form = $this->$func($form, $form_state, $char);
+        }
+        else {
+          drupal_set_message('Method does not exist: ' . $func, 'warning', TRUE);
+        }
+      }
+    }
+
+    return $form;
+  }
+
 }
 
 class CharClassController extends EntityBundlePluginEntityController {

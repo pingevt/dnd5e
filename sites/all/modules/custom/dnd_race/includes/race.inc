@@ -4,7 +4,7 @@ class DNDRace {
 
   public $size;
 
-  public function racialTraits() {
+  public function racialTraits($char = NULL) {
     return array();
   }
 
@@ -32,6 +32,19 @@ class DNDRace {
     return $traits;
   }
 
+  public function checkTraitDependencies($char) {
+    $traits = $this->racialTraits($char);
+    $race_data = $char->getRaceData();
+
+    foreach ($traits as $trait_id => $trait) {
+      if ($trait['hooks']['form'] == TRUE && !isset($race_data[$trait_id])) {
+        return FALSE;
+      }
+    }
+
+    return TRUE;
+  }
+
   public function racialAbilityScoreIncrease() {
     return array(
       'strength' => 0,
@@ -43,14 +56,17 @@ class DNDRace {
     );
   }
 
-  public function characterForm($form, &$form_state, &$character) {
-    $traits = $this->racialTraits();
+  public function characterForm($form, &$form_state, &$char) {
+    $traits = $this->racialTraits($char);
 
     foreach ($traits as $trait_id => $trait) {
       if ($trait['hooks']['form'] == TRUE) {
         $func = $trait_id . '_form';
         if (method_exists($this, $func)) {
-          $form = $this->$func($form, $form_state, $character);
+          $form = $this->$func($form, $form_state, $char);
+        }
+        else {
+          drupal_set_message('Method does not exist: ' . $func, 'warning', TRUE);
         }
       }
     }

@@ -261,6 +261,9 @@ function character_form($form, &$form_state, $entity, $op = 'edit', $entity_type
 dpm($form);
 dpm($form_state);
 dpm($entity);
+
+  ctools_include('plugins');
+
 /*
   $entity_info = entity_get_info($entity->entityType());
   $property_info = entity_get_property_info($entity->entityType());
@@ -323,7 +326,6 @@ $form['page'] = array(
    * Step 1: choose race
    */
   case 1:
-    ctools_include('plugins');
     $races = ctools_get_plugins('dnd_race', 'dnd_race');
 
     $available_races = array();
@@ -351,10 +353,33 @@ $form['page'] = array(
    * Step 2: add race forms.
    */
   case 2:
-    $race_plugin = ctools_get_plugins('dnd_race', 'dnd_race', $entity->field_char_race[LANGUAGE_NONE][0]['value']);
-    $race = new $race_plugin['class'];
+    if (!isset($form_state['#race'])) {
+      $race_plugin = ctools_get_plugins('dnd_race', 'dnd_race', $entity->field_char_race[LANGUAGE_NONE][0]['value']);
+      $race = new $race_plugin['class'];
+
+      // Set this for use in the submit function.
+      $form_state['#race'] = $race;
+    }
+    else {
+      $race = $form_state['#race'];
+    }
 
     $form = $race->characterForm($form, $form_state, $entity);
+
+    break;
+
+  /**
+   * Step 3: add Class.
+   */
+  case 3:
+    // Add field_char_class to form.
+    field_attach_form($entity_type, $entity, $form, $form_state, LANGUAGE_NONE, array('field_name' => 'field_char_class'));
+
+    // Add field_char_race_data to form.
+    field_attach_form($entity_type, $entity, $form, $form_state, LANGUAGE_NONE, array('field_name' => 'field_char_class_data'));
+    // Tweak a few values.
+    $form['field_char_class_data']['#access'] = FALSE;
+    $form['field_char_class_data'][LANGUAGE_NONE][0]['value']['#value'] = serialize(array());
 
     break;
   }
@@ -382,10 +407,13 @@ function character_form_validate($form, &$form_state) {
   $entity = $form_state['#entity'];
 
   switch ($form_state['step']) {
-  case '1':
+  case 1:
     field_attach_form_validate($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race'));
     break;
-  case '2':
+  case 2:
+    break;
+  case 3:
+    field_attach_form_validate($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_class'));
     break;
   default:
     break;
@@ -394,20 +422,35 @@ function character_form_validate($form, &$form_state) {
 
 function character_form_submit($form, &$form_state) {
 
+  ctools_include('plugins');
+
   $form_state['storedvalues'][$form_state['step']] = $form_state['values'];
   if ($form_state['step'] + 1 != 10) {
-      $form_state['rebuild'] = TRUE;
+    $form_state['rebuild'] = TRUE;
   }
 
   $entity = $form_state['#entity'];
 
   switch ($form_state['step']) {
-  case '1':
+  case 1:
     field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race'));
     field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_race_data'));
     $form_state['#entity'] = $entity;
     break;
-  case '2':
+  case 2:
+    $race = $form_state['#race'];
+
+    if (!$race->checkTraitDependencies($entity)) {
+      $form_state['step']--;
+      $form_state['rebuild'] = TRUE;
+    }
+
+    break;
+  case 3:
+
+    field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_class'));
+    field_attach_submit($entity->entityType(), $entity, $form, $form_state, array('field_name' => 'field_char_class_data'));
+
     break;
   default:
     break;

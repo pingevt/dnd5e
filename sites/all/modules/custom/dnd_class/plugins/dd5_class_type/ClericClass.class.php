@@ -466,4 +466,29 @@ class ClericClass extends CharClass {
 
     return $cantrips_known;
   }
+
+
+
+  /*******************
+   * Trait hooks
+   ******************/
+  protected function skills_form($form, &$form_state, &$character) {
+
+  }
+
+  public static function skills_form_validate($element, &$form_state, &$form) {
+    if ($form_state['values']['skills'] == NULL || empty($form_state['values']['skills'])) {
+      form_set_error(implode('][', $element['#array_parents']), 'You must choose your skills.');
+    }
+  }
+
+  public static function sills_form_submit($form, &$form_state) {
+    $char = $form_state['#entity'];
+
+    $race_data = $char->getRaceData();
+
+    $race_data['tool_proficiency'] = $form_state['values']['tool_proficiency'];
+
+    $form_state['#entity']->field_char_race_data[LANGUAGE_NONE][0]['value'] = serialize($race_data);
+  }
 }

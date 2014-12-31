@@ -10,7 +10,7 @@ class Dwarf extends DNDRace {
 
   public $size = 'medium';
 
-  public function racialTraits() {
+  public function racialTraits($char = NULL) {
     $traits = parent::racialTraits();
 
     $traits['ability_score_increase'] = array(
@@ -113,7 +113,23 @@ class Dwarf extends DNDRace {
     );
 
     // Add in defaults
-    $traits = parent::racialTraitDefaults($traits);
+    $traits = $this->racialTraitDefaults($traits);
+
+    // If any traits here define more traits, get them now...
+    foreach ($traits as $trait_id => $trait) {
+      if ($trait['hooks']['racial_traits'] == TRUE) {
+        $func = $trait_id . '_racial_traits';
+        if (method_exists($this, $func)) {
+          $traits = array_merge($traits, $this->$func($char));
+        }
+        else {
+          drupal_set_message('Method does not exist: ' . $func, 'warning', TRUE);
+        }
+      }
+    }
+
+    // Add in defaults
+    $traits = $this->racialTraitDefaults($traits);
 
     return $traits;
   }
@@ -129,7 +145,9 @@ class Dwarf extends DNDRace {
 
 
 
-
+  /*********
+   * HOOKS
+   ********/
 
 
 
@@ -215,4 +233,51 @@ class Dwarf extends DNDRace {
 
     $form_state['#entity']->field_char_race_data[LANGUAGE_NONE][0]['value'] = serialize($race_data);
   }
+
+  /**
+   * Subrace racial_traits
+   */
+  public function subrace_racial_traits($char) {
+    $traits = array();
+
+    $racial_data = $char->getRaceData();
+
+    if (isset($racial_data['subrace']) && $racial_data['subrace'] == 'hill') {
+      $traits['hill_ability_score_increase'] = array(
+        'name' => t('Hill Dwarf Ability Score Increase'),
+        'descr' => t('Your Wisdom score increases by 1'),
+        'hooks' => array(
+          'ability_score' => TRUE,
+        ),
+      );
+
+      $traits['dwarven_toughness'] = array(
+        'name' => t('Dwarven Toughness'),
+        'descr' => t('Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.'),
+        'hooks' => array(
+          'hit_point' => TRUE,
+        ),
+      );
+    }
+    else if (isset($racial_data['subrace']) && $racial_data['subrace'] == 'mountain') {
+      $traits['mountain_ability_score_increase'] = array(
+        'name' => t('Mountain Dwarf Ability Score Increase'),
+        'descr' => t('Your Strength score increases by 2'),
+        'hooks' => array(
+          'ability_score' => TRUE,
+        ),
+      );
+
+      $traits['dwarven_armor_training'] = array(
+        'name' => t('Dwarven Armor Training'),
+        'descr' => t('You have proficiency with light and medium armor'),
+        'hooks' => array(
+          'proficiency' => TRUE,
+        ),
+      );
+    }
+
+    return $traits;
+  }
+
 }
