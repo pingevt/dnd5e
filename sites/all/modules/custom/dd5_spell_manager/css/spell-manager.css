@@ -1,3 +1,18 @@
 .consumed-label {
   float: right;
 }
+form table tr.even {
+  background: #fff;
+}
+form table tr td:last-child {
+  border: none;
+}
+form table tr.spell-even {
+  background: #f3f4ee;
+}
+form table td {
+  vertical-align: top;
+}
+form table td h2 {
+  margin-top: 0;
+}

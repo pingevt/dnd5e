@@ -160,9 +160,13 @@ function character_spell_manager_form($form, &$form_state, $character) {
     'spells' => array(
       '#theme' => 'spell_table',
       '#header' => array(
-        array('data' => 'Prepared', 'style' => 'width: 1px'),
+        array('data' => 'P', 'style' => 'width: 1px'),
         array('data' => 'Spell group', 'style' => 'width: 1px'),
         'Spell',
+        'Casting Time',
+        'Range',
+        'Duration',
+        'Components',
         array('data' => 'SP Lvl', 'style' => 'width: 1px'),
         array('data' => '0', 'style' => 'width: 1px'),
         array('data' => '1', 'style' => 'width: 1px'),
@@ -377,8 +381,28 @@ function character_spell_manager_form($form, &$form_state, $character) {
       $higher_lvl_fieldset = array();
     }
 
+    $row['spell_description']['title'] = array(
+      '#markup' => '<h2>' . $spell->name . '</h2>',// . $component_markup . render($description_fieldset) . render($higher_lvl_fieldset),
+    );
     $row['spell_description']['text'] = array(
-      '#markup' => '<h2>' . $spell->name . '</h2>' . $component_markup . render($description_fieldset) . render($higher_lvl_fieldset),
+      '#markup' => $component_markup . render($description_fieldset) . render($higher_lvl_fieldset),
+    );
+
+    $d = field_view_field('spell', $spell, 'field_spell_casting_time', array('label' => 'hidden'));
+    $row['casting_time'] = array(
+      '#markup' => render($d),
+    );
+    $d = field_view_field('spell', $spell, 'field_spell_range', array('label' => 'hidden'));
+    $row['range'] = array(
+      '#markup' => render($d),
+    );
+    $d = field_view_field('spell', $spell, 'field_spell_duration', array('label' => 'hidden'));
+    $row['duration'] = array(
+      '#markup' => render($d),
+    );
+    $d = field_view_field('spell', $spell, 'field_spell_components', array('label' => 'hidden'));
+    $row['components'] = array(
+      '#markup' => render($d),
     );
 
     $row['spell_id'] = array(
@@ -412,7 +436,6 @@ function character_spell_manager_form($form, &$form_state, $character) {
 
       $row[$i] = $checkbox;
     }
-
     $form['spells']['rows'][$spell->spell_id] = $row;
   }
 
@@ -629,26 +652,67 @@ function theme_spell_table(&$variables) {
     '#rows' => array(),
   );
 
+  $count = 0;
   // Traverse each row.  @see element_chidren().
   foreach (element_children($rows) as $row_index) {
     $row = array();
+    $row2 = array();
     // Traverse each column in the row.  @see element_children().
     foreach (element_children($rows[$row_index]) as $col_index) {
-      if ($col_index == 'spell_description') {
+      if ($col_index === 0) {
         // Render the column form element.
-        $row[] = drupal_render($rows[$row_index][$col_index]) . drupal_render($rows[$row_index]['spell_id']);
+        $row[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]),
+          'rowspan' => 2,
+        );
+
       }
-      else if ($col_index == 'spell_id') {
+      elseif ($col_index === 'spell_description') {
+        // Render the column form element.
+        $row[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]['title']) . drupal_render($rows[$row_index]['spell_id']),
+          'colspan' => 1,
+        );
+        $row2[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]['text']),
+          'colspan' => 4,
+        );
+      }
+      elseif ($col_index === 'spell_id') {
+
+
+      }
+      elseif (in_array($col_index, array('casting_time', 'range', 'duration'))) {
+        // Render the column form element.
+        $row[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]),
+          'rowspan' => 1,
+        );
 
       }
       else {
         // Render the column form element.
-        $row[] = drupal_render($rows[$row_index][$col_index]);
+        $row[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]),
+          'rowspan' => 2,
+        );
+
       }
 
     }
+
+    $odds = array('odd', 'even');
     // Add the row to the table.
-    $content['#rows'][] = $row;
+    $content['#rows'][] = array(
+      'data' => $row,
+      'class' => array('spell-' . $odds[($count%2)]),
+    );
+    $content['#rows'][] = array(
+      'data' => $row2,
+      'class' => array('spell-' . $odds[($count%2)]),
+    );
+
+    $count++;
   }
 
   // Redner the table and return.
