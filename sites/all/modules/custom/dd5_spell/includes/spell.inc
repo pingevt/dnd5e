@@ -116,11 +116,17 @@ class SpellUIController extends BundleUIController {
       case 'Name':
         $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
+      case 'Status':
+        $query->propertyOrderBy('status', strtoupper($_GET['sort']));
+        break;
       case 'Level':
         $query->fieldOrderBy('field_spell_level', 'value', strtoupper($_GET['sort']));
         break;
       case 'Type':
         $query->fieldOrderBy('field_spell_type', 'value', strtoupper($_GET['sort']));
+        break;
+      case 'Ritual':
+        $query->fieldOrderBy('field_spell_ritual', 'value', strtoupper($_GET['sort']));
         break;
       }
     }
@@ -141,8 +147,10 @@ class SpellUIController extends BundleUIController {
       $lvl = $entity->returnLvl();
 
       $additional_cols = array(
+        ($entity->status)? 'Published' : '',
         ($lvl == 0)? 'Cantrip' : $lvl,
         $entity->getSpellType(),
+        (isset($entity->field_spell_ritual[LANGUAGE_NONE][0]['value']) && $entity->field_spell_ritual[LANGUAGE_NONE][0]['value'] == TRUE)? 'Ritual' : '',
       );
       $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity, $additional_cols);
     }
@@ -154,6 +162,11 @@ class SpellUIController extends BundleUIController {
     );
     $additional_headers = array(
       array(
+        'data' => 'Status',
+        'field' => 'status',
+        'sort' => (isset($_GET['order']) && $_GET['order'] == 'Status')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      ),
+      array(
         'data' => 'Level',
         'field' => 'level',
         'sort' => (isset($_GET['order']) && $_GET['order'] == 'Level')? strtoupper($order[$_GET['sort']]) : 'ASC',
@@ -162,7 +175,12 @@ class SpellUIController extends BundleUIController {
         'data' => 'Type',
         'field' => 'type',
         'sort' => (isset($_GET['order']) && $_GET['order'] == 'Type')? strtoupper($order[$_GET['sort']]) : 'ASC',
-      )
+      ),
+      array(
+        'data' => 'Ritual',
+        'field' => 'ritual',
+        'sort' => (isset($_GET['order']) && $_GET['order'] == 'Ritual')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      ),
     );
 
     $render = array(
