@@ -118,15 +118,19 @@ class SpellUIController extends BundleUIController {
         break;
       case 'Status':
         $query->propertyOrderBy('status', strtoupper($_GET['sort']));
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
       case 'Level':
         $query->fieldOrderBy('field_spell_level', 'value', strtoupper($_GET['sort']));
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
       case 'Type':
         $query->fieldOrderBy('field_spell_type', 'value', strtoupper($_GET['sort']));
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
       case 'Ritual':
         $query->fieldOrderBy('field_spell_ritual', 'value', strtoupper($_GET['sort']));
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
       }
     }
