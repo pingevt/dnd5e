@@ -124,6 +124,10 @@ class SpellUIController extends BundleUIController {
         break;
       }
     }
+    // Default to name, ASC
+    else {
+      $query->propertyOrderBy('name', 'ASC');
+    }
 
 
     $results = $query->execute();
@@ -183,7 +187,7 @@ class SpellUIController extends BundleUIController {
     array_unshift($header, array(
       'data' => 'Name',
       'field' => 'name',
-      'sort' => (isset($_GET['order']) && $_GET['order'] == 'Name')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      'sort' => (isset($_GET['order']) && $_GET['order'] == 'Name')? strtoupper($order[$_GET['sort']]) : 'DESC',
     ));
     if (!empty($this->entityInfo['exportable'])) {
       $header[] = t('Status');
