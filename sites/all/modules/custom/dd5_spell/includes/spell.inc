@@ -132,6 +132,10 @@ class SpellUIController extends BundleUIController {
         $query->fieldOrderBy('field_spell_ritual', 'value', strtoupper($_GET['sort']));
         $query->propertyOrderBy('name', strtoupper($_GET['sort']));
         break;
+      case 'User':
+        $query->propertyOrderBy('uid', 'value', strtoupper($_GET['sort']));
+        $query->propertyOrderBy('name', strtoupper($_GET['sort']));
+        break;
       }
     }
     // Default to name, ASC
@@ -149,12 +153,14 @@ class SpellUIController extends BundleUIController {
     $rows = array();
     foreach ($entities as $entity) {
       $lvl = $entity->returnLvl();
+      $user = user_load($entity->uid);
 
       $additional_cols = array(
         ($entity->status)? 'Published' : '',
         ($lvl == 0)? 'Cantrip' : $lvl,
         $entity->getSpellType(),
         (isset($entity->field_spell_ritual[LANGUAGE_NONE][0]['value']) && $entity->field_spell_ritual[LANGUAGE_NONE][0]['value'] == TRUE)? 'Ritual' : '',
+        $user->name,
       );
       $rows[] = $this->overviewTableRow($conditions, entity_id($this->entityType, $entity), $entity, $additional_cols);
     }
@@ -184,6 +190,11 @@ class SpellUIController extends BundleUIController {
         'data' => 'Ritual',
         'field' => 'ritual',
         'sort' => (isset($_GET['order']) && $_GET['order'] == 'Ritual')? strtoupper($order[$_GET['sort']]) : 'ASC',
+      ),
+      array(
+        'data' => 'User',
+        'field' => 'uid',
+        'sort' => (isset($_GET['order']) && $_GET['order'] == 'User')? strtoupper($order[$_GET['sort']]) : 'ASC',
       ),
     );
 
