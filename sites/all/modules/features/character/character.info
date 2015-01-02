@@ -25,5 +25,5 @@ features[field_instance][] = character-character-field_spell_data
 features[field_instance][] = character-character-field_spell_groups
 features[image][] = dd5_character_thumbnail
 features[views_view][] = my_characters
-mtime = 1418847337
+mtime = 1418941753
 project path = sites/all/modules/features
