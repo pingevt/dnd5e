@@ -289,7 +289,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
       'spell_lvl' => 'Spell Level',
       'alpha_asc' => 'Alpha Asc',
       'alpha_desc' => 'Alpha Desc',
-      'spell_group' => 'Spell Group',
+      //'spell_group' => 'Spell Group',
     ),
     '#ajax' => array(
       'callback' => 'spell_manager_form_replace',
@@ -325,7 +325,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
     );
 
     $row['group'] = array(
-      '#markup' => t($spell->spell_group_title),
+      '#markup' => t(implode(', ', $spell->spell_group_title)),
     );
 
     // Get components if necessary.

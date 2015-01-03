@@ -46,11 +46,26 @@ class Character extends Entity {
     if (isset($this->field_spell_groups[LANGUAGE_NONE]) && is_array($this->field_spell_groups[LANGUAGE_NONE])) {
       foreach ($this->field_spell_groups[LANGUAGE_NONE] as $i => $target_group) {
         $spell_group = current(entity_load('spell_group', array($target_group['target_id'])));
-
         foreach ($spell_group->field_spells[LANGUAGE_NONE] as $j => $target_spell) {
           $spell = current(entity_load('spell', array($target_spell['target_id'])));
-          $spell->spell_group_title = $spell_group->name;
-          $spells[] = $spell;
+
+          if (isset($spells[$spell->spell_id])) {
+            $spells[$spell->spell_id]->spell_group_title[] = $spell_group->name;
+
+            if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
+              $spells[$spell->spell_id]->always_prepared = TRUE;
+            }
+          }
+          else {
+            $spell->spell_group_title[] = $spell_group->name;
+            if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
+              $spell->always_prepared = TRUE;
+            }
+            else {
+              $spell->always_prepared = FALSE;
+            }
+            $spells[$spell->spell_id] = $spell;
+          }
         }
       }
     }
