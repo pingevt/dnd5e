@@ -531,6 +531,49 @@ function spells_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'spell_group-spell_group-field_sg_always_prepared'
+  $field_instances['spell_group-spell_group-field_sg_always_prepared'] = array(
+    'bundle' => 'spell_group',
+    'default_value' => array(
+      0 => array(
+        'value' => 0,
+      ),
+    ),
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 1,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'spell_group',
+    'field_name' => 'field_sg_always_prepared',
+    'label' => 'Always prepared',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => 1,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 0,
+    ),
+  );
+
   // Exported field_instance: 'spell_group-spell_group-field_spells'
   $field_instances['spell_group-spell_group-field_spells'] = array(
     'bundle' => 'spell_group',
@@ -570,12 +613,13 @@ function spells_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 2,
+      'weight' => 1,
     ),
   );
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('Always prepared');
   t('Casting time');
   t('Consumed?');
   t('Higher level effects');
