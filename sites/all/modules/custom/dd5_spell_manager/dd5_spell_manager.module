@@ -161,13 +161,13 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#theme' => 'spell_table',
       '#header' => array(
         array('data' => 'P', 'style' => 'width: 1px'),
+        array('data' => 'SP Lvl', 'style' => 'width: 1px'),
         array('data' => 'Spell group', 'style' => 'width: 1px'),
         'Spell',
-        'Casting Time',
-        'Range',
-        'Duration',
-        'Components',
-        array('data' => 'SP Lvl', 'style' => 'width: 1px'),
+        array('data' => 'Casting Time', 'style' => 'width: 50px'),
+        array('data' => 'Range', 'style' => 'width: 50px'),
+        array('data' => 'Duration', 'style' => 'width: 50px'),
+        array('data' => 'Comp.', 'style' => 'width: 1px'),
         array('data' => '0', 'style' => 'width: 1px'),
         array('data' => '1', 'style' => 'width: 1px'),
         array('data' => '2', 'style' => 'width: 1px'),
@@ -324,6 +324,19 @@ function character_spell_manager_form($form, &$form_state, $character) {
       ),
     );
 
+    $spell_lvl = field_view_field('spell', $spell, 'field_spell_level', array('label' => 'hidden'));
+    $spell_type = field_view_field('spell', $spell, 'field_spell_type', array('label' => 'hidden'));
+
+    $spell_lvl_mkup = render($spell_lvl);
+    $spell_lvl_mkup .= render($spell_type);
+
+    $row['lvl'] = array(
+      '#markup' => $spell_lvl_mkup,
+      '#attributes' => array(
+        'class' => array('level-col'),
+      ),
+    );
+
     $row['group'] = array(
       '#markup' => t(implode(', ', $spell->spell_group_title)),
     );
@@ -410,11 +423,8 @@ function character_spell_manager_form($form, &$form_state, $character) {
       '#value' => $spell->spell_id,
     );
 
-    $spell_lvl = $spell->field_spell_level[LANGUAGE_NONE][0]['value'];
-    $row['lvl'] = array(
-      '#markup' => ($spell_lvl == 0)? 'Cantrip' : $spell_lvl,
-    );
 
+    $spell_lvl = (int) $spell->field_spell_level[LANGUAGE_NONE][0]['value'];
     for ($i=0; $i<=9; $i++) {
       $checkbox = array();
 
@@ -436,6 +446,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
 
       $row[$i] = $checkbox;
     }
+
     $form['spells']['rows'][$spell->spell_id] = $row;
   }
 
@@ -687,6 +698,15 @@ function theme_spell_table(&$variables) {
         $row[] = array(
           'data' => drupal_render($rows[$row_index][$col_index]),
           'rowspan' => 1,
+        );
+
+      }
+      elseif (in_array($col_index, array('lvl'))) {
+        // Render the column form element.
+        $row[] = array(
+          'data' => drupal_render($rows[$row_index][$col_index]),
+          'rowspan' => 2,
+          'class' => array('spell-level'),
         );
 
       }

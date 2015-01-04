@@ -24,8 +24,34 @@ form table {
   td {
     vertical-align: top;
 
+    &.spell-level {
+      font-style: italic;
+    }
+
     h2 {
-      margin-top: 0;
+      margin: 0;
     }
   }
+
+  fieldset {
+    margin: 0;
+    padding: 2.5em 0 0 0;
+    clear: both;
+
+    &.collapsed {
+      padding: 2.5em 0 0 0;
+    }
+
+    .fieldset-wrapper {
+      padding: 0 4px 4px 5px;
+    }
+  }
+}
+
+.consumed-label {
+  padding: 0px 4px;
+  background: #aa1111;
+  color: white;
+  font-weight: 600;
+  font-size: .6em;
 }
