@@ -164,6 +164,8 @@ function character_spell_manager_form($form, &$form_state, $character) {
         array('data' => 'SP Lvl', 'style' => 'width: 1px'),
         array('data' => 'Spell group', 'style' => 'width: 1px'),
         'Spell',
+        'Base dmg',
+        'Shape',
         array('data' => 'Casting Time', 'style' => 'width: 50px'),
         array('data' => 'Range', 'style' => 'width: 50px'),
         array('data' => 'Duration', 'style' => 'width: 50px'),
@@ -399,6 +401,16 @@ function character_spell_manager_form($form, &$form_state, $character) {
     );
     $row['spell_description']['text'] = array(
       '#markup' => $component_markup . render($description_fieldset) . render($higher_lvl_fieldset),
+    );
+
+    $dmg = field_view_field('spell', $spell, 'field_spell_base_damage', array('label' => 'hidden'));
+    $row['dmg'] = array(
+      '#markup' => render($dmg),
+    );
+
+    $shape = field_view_field('spell', $spell, 'field_spell_shape', array('label' => 'hidden'));
+    $row['shape'] = array(
+      '#markup' => render($shape),
     );
 
     $d = field_view_field('spell', $spell, 'field_spell_casting_time', array('label' => 'hidden'));
@@ -686,7 +698,7 @@ function theme_spell_table(&$variables) {
         );
         $row2[] = array(
           'data' => drupal_render($rows[$row_index][$col_index]['text']),
-          'colspan' => 4,
+          'colspan' => 6,
         );
       }
       elseif ($col_index === 'spell_id') {
