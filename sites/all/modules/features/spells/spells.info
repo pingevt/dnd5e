@@ -44,5 +44,4 @@ features[field_instance][] = spell-spell-field_spell_type
 features[field_instance][] = spell_group-spell-field_spells
 features[field_instance][] = spell_group-spell_group-field_sg_always_prepared
 features[field_instance][] = spell_group-spell_group-field_spells
-mtime = 1420322708
 project path = sites/all/modules/features

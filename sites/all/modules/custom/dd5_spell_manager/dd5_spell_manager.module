@@ -192,7 +192,6 @@ function character_spell_manager_form($form, &$form_state, $character) {
   // Initiate variables needed.
   $character_spells = $character->getSpells();
   $character_spell_data = $character->getSpellData();
-
   $spell_slots = $character->getSpellSlots();
   $character_lvl = $character->getLvl();
 
@@ -440,7 +439,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
     for ($i=0; $i<=9; $i++) {
       $checkbox = array();
 
-      if(($spell_lvl == 0 && $i == 0) || ($spell_lvl > 0 && $i >= $spell_lvl)) {
+      //if(($spell_lvl == 0 && $i == 0) || ($spell_lvl > 0 && $i >= $spell_lvl)) {
         $checkbox = array(
           '#type' => 'checkbox',
           '#title' => t('Cast Spell'),
@@ -454,7 +453,7 @@ function character_spell_manager_form($form, &$form_state, $character) {
             'effect' => 'fade',
           ),
         );
-      }
+      //}
 
       $row[$i] = $checkbox;
     }
@@ -556,7 +555,7 @@ function character_spell_manager_form_validate(&$form, &$form_state) {
 
   if ($form_state['triggering_element']['#title'] != 'Remove') {
     foreach ($spells_by_lvl as $lvl => $count) {
-      if ($count > $spell_slots[($character_lvl-1)][$lvl]) {
+      if ($lvl != 0 && $count > $spell_slots[($character_lvl-1)][$lvl]) {
         form_set_error(implode('][', $form_state['triggering_element']['#array_parents']), 'Too many spells for slot lvl ' . $lvl);
       }
     }

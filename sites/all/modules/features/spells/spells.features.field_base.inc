@@ -54,6 +54,7 @@ function spells_field_default_field_bases() {
     'settings' => array(
       'allowed_values' => array(
         'dd5_player_handbook' => 'D&D5e Player Handbook',
+        'dd5_elemental_evil' => 'D&D5e Elemental Evil Player\'s Companion',
       ),
       'allowed_values_function' => '',
     ),
