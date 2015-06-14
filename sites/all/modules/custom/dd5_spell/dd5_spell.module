@@ -107,7 +107,7 @@ function dd5_spell_entity_info() {
           'path' => 'admin/dnd5/spells/spell-type/manage/%spell_type',
           'bundle argument' => 5,
           'real path' => 'admin/dnd5/spells/spell-type/manage/spell',
-          'access callback' => TRUE,
+          'access callback' => 'user_access',
         ),
       ),
       /*
@@ -168,7 +168,7 @@ function dd5_spell_entity_info() {
           'path' => 'admin/dnd5/spell-group/spell-group-type/manage/%spell_group_type',
           'bundle argument' => 5,
           'real path' => 'admin/dnd5/spell-group/spell-group-type/manage/spell_group',
-          'access callback' => TRUE,
+          'access callback' => 'user_access',
         ),
       ),
     ),

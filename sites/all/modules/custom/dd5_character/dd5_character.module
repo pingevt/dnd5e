@@ -94,7 +94,7 @@ function dd5_character_entity_info() {
           'path' => 'admin/dnd5/character/character-type/manage/%character_type',
           'bundle argument' => 5,
           'real path' => 'admin/dnd5/character/character-type/manage/character',
-          'access callback' => TRUE,
+          'access callback' => 'user_access',
         ),
       ),
     ),
