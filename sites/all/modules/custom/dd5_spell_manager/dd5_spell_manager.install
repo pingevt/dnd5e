@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Update spell data into fields.
+ */
+function dd5_spell_manager_update_7001(&$sandbox) {
+  $c = entity_load('character', FALSE);
+
+  foreach ($c as $char_id => $char) {
+    if (isset($char->field_spell_data[LANGUAGE_NONE][0]['value'])) {
+      $spell_data = unserialize($char->field_spell_data[LANGUAGE_NONE][0]['value']);
+
+      if(!empty($spell_data)) {
+        foreach ($spell_data['prepared'] as $spell_id => $val) {
+          if ($val) {
+            $char->field_spells_prepared[LANGUAGE_NONE][] = array(
+              'value' => $spell_id,
+            );
+          }
+        }
+
+        unset($spell_data['prepared']);
+        $char->saveSpellData($spell_data);
+      }
+
+      entity_save('character', $char);
+    }
+  }
+}

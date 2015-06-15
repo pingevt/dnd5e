@@ -40,33 +40,131 @@ class Character extends Entity {
     return FALSE;
   }
 
-  function getSpells() {
+  function prepareSpell($spell_id) {
+
+    $current_spells = array($spell_id);
+    foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
+      $current_spells[] = $item['value'];
+    }
+    unset($this->field_spells_prepared[LANGUAGE_NONE]);
+
+    $current_spells = array_unique($current_spells, SORT_NUMERIC);
+    sort($current_spells, SORT_NUMERIC);
+
+    foreach($current_spells as $spell_id) {
+      $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
+    }
+
+    // Update field
+    $field_name = 'field_spells_prepared';
+    $info = field_info_field($field_name);
+    $fields = array($info['id']);
+
+    field_sql_storage_field_storage_write('character', $this, 'update', $fields);
+  }
+
+  function unprepareSpell($spell_id) {
+
+    foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
+      $current_spells[] = $item['value'];
+    }
+    unset($this->field_spells_prepared[LANGUAGE_NONE]);
+
+    $current_spells = array_unique($current_spells, SORT_NUMERIC);
+    sort($current_spells, SORT_NUMERIC);
+
+    // remove item
+    $current_spells = array_diff($current_spells, array($spell_id));
+
+    foreach($current_spells as $spell_id) {
+      $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
+    }
+
+    // Update field
+    $field_name = 'field_spells_prepared';
+    $info = field_info_field($field_name);
+    $fields = array($info['id']);
+
+    field_sql_storage_field_storage_write('character', $this, 'update', $fields);
+  }
+
+  function getSpells($options = array()) {
+    $options += array(
+      'filter' => FALSE,
+      'order' => FALSE,
+    );
+
     $spells = array();
 
-    if (isset($this->field_spell_groups[LANGUAGE_NONE]) && is_array($this->field_spell_groups[LANGUAGE_NONE])) {
-      foreach ($this->field_spell_groups[LANGUAGE_NONE] as $i => $target_group) {
-        $spell_group = current(entity_load('spell_group', array($target_group['target_id'])));
-        foreach ($spell_group->field_spells[LANGUAGE_NONE] as $j => $target_spell) {
-          $spell = current(entity_load('spell', array($target_spell['target_id'])));
+    $q = db_select('field_data_field_spell_groups', 'sg');
+    $q->join('field_data_field_sg_always_prepared', 'prep', 'prep.entity_id = sg.field_spell_groups_target_id');
+    $q->rightJoin('field_data_field_spells', 's', 'sg.field_spell_groups_target_id = s.entity_id');
+    $q->join('dd5_spell', 'sp', 's.field_spells_target_id = sp.spell_id');
+    $q->leftJoin('field_data_field_spells_prepared', 'sprep', 'sprep.field_spells_prepared_value = sp.spell_id');
 
-          if (isset($spells[$spell->spell_id])) {
-            $spells[$spell->spell_id]->spell_group_title[] = $spell_group->name;
+    $q->fields('sprep', array('field_spells_prepared_value'));
+    $q->fields('sp', array('spell_id'));
+    $q->fields('sg', array('field_spell_groups_target_id'));
+    $q->fields('prep', array('field_sg_always_prepared_value'));
 
-            if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
-              $spells[$spell->spell_id]->always_prepared = TRUE;
-            }
-          }
-          else {
-            $spell->spell_group_title[] = $spell_group->name;
-            if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
-              $spell->always_prepared = TRUE;
-            }
-            else {
-              $spell->always_prepared = FALSE;
-            }
-            $spells[$spell->spell_id] = $spell;
-          }
+    $q->condition('sg.entity_id', $this->char_id);
+    $q->condition('sp.status', 1);
+
+    if ($options['filter']) {
+      switch($options['filter']) {
+      case 'prepared':
+        $q->condition('sprep.field_spells_prepared_value', 0, '!=');
+        break;
+      }
+    }
+
+    if ($options['order']) {
+      switch($options['order']) {
+      case 'spell_lvl':
+        $q->leftJoin('field_data_field_spell_level', 'splvl', 'sp.spell_id = splvl.entity_id');
+        $alias = $q->addField('splvl', 'field_spell_level_value', 'spell_level');
+        $q->orderBy('splvl.field_spell_level_value', 'ASC');
+        $q->orderBy('sp.name', 'ASC');
+        break;
+      case 'alpha_asc':
+        $q->orderBy('sp.name', 'ASC');
+        break;
+      case 'alpha_desc':
+        $q->orderBy('sp.name', 'DESC');
+        break;
+      }
+    }
+
+    $spell_return = $q->execute()->fetchAll();
+
+    foreach($spell_return as $s) {
+      $loaded_spell = current(entity_load('spell', array($s->spell_id)));
+      $spell_group = current(entity_load('spell_group', array($s->field_spell_groups_target_id)));
+
+      if (isset($spells[$s->spell_id])) {
+        $spells[$s->spell_id]->spell_group_title[] = $spell_group->name;
+
+        if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
+          $spells[$s->spell_id]->always_prepared = TRUE;
         }
+      }
+      else {
+        $loaded_spell->spell_group_title[] = $spell_group->name;
+        if ($spell_group->field_sg_always_prepared[LANGUAGE_NONE][0]['value'] == TRUE) {
+          $loaded_spell->always_prepared = TRUE;
+        }
+        else {
+          $loaded_spell->always_prepared = FALSE;
+        }
+
+        if ($s->field_spells_prepared_value != 0 && !empty($s->field_spells_prepared_value)) {
+          $loaded_spell->prepared = TRUE;
+        }
+        else {
+          $loaded_spell->prepared = FALSE;
+        }
+
+        $spells[$s->spell_id] = $loaded_spell;
       }
     }
 
