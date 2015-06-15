@@ -5,5 +5,9 @@ sites/*/settings*.php
 sites/*/files
 sites/*/private
 
+.DS_Store
+
+*/.DS_Store
+
 /sites/all/modules/.DS_Store
 /sites/all/modules/features/.DS_Store
