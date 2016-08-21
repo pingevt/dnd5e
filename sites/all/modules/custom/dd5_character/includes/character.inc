@@ -110,7 +110,7 @@ dpm('saving');
     $q->join('field_data_field_sg_always_prepared', 'prep', 'prep.entity_id = sg.field_spell_groups_target_id');
     $q->rightJoin('field_data_field_spells', 's', 'sg.field_spell_groups_target_id = s.entity_id');
     $q->join('dd5_spell', 'sp', 's.field_spells_target_id = sp.spell_id');
-    $q->leftJoin('field_data_field_spells_prepared', 'sprep', 'sprep.field_spells_prepared_value = sp.spell_id AND AND sprep.entity_id = sg.entity_id');
+    $q->leftJoin('field_data_field_spells_prepared', 'sprep', 'sprep.field_spells_prepared_value = sp.spell_id AND sprep.entity_id = sg.entity_id');
 
     $q->fields('sprep', array('field_spells_prepared_value'));
     $q->fields('sp', array('spell_id'));
