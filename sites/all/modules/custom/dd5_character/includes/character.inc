@@ -119,7 +119,8 @@ dpm('saving');
 
     $q->condition('sg.entity_id', $this->char_id);
     $q->condition('sp.status', 1);
-
+dpm($options);
+dpq($q);
     if ($options['filter']) {
       switch($options['filter']) {
       case 'prepared':
@@ -146,7 +147,7 @@ dpm('saving');
     }
 
     $spell_return = $q->execute()->fetchAll();
-
+dpm($spell_return);
     foreach($spell_return as $s) {
       $loaded_spell = current(entity_load('spell', array($s->spell_id)));
       $spell_group = current(entity_load('spell_group', array($s->field_spell_groups_target_id)));
@@ -177,7 +178,7 @@ dpm('saving');
         $spells[$s->spell_id] = $loaded_spell;
       }
     }
-
+dpm($spells);
     return $spells;
   }
 
