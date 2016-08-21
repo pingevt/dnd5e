@@ -41,7 +41,7 @@ class Character extends Entity {
   }
 
   function prepareSpell($spell_id) {
-dpm('prepare');
+
     $current_spells = array($spell_id);
     foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
       $current_spells[] = $item['value'];
@@ -64,38 +64,28 @@ dpm('prepare');
   }
 
   function unprepareSpell($spell_id) {
-dpm('unprepareSpell: ' . $spell_id);
-
-    $original_spells = array();
 
     foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
       $current_spells[] = $item['value'];
-      $original_spells[] = $item['value'];
     }
     unset($this->field_spells_prepared[LANGUAGE_NONE]);
-dpm($current_spells);
+
     $current_spells = array_unique($current_spells, SORT_NUMERIC);
     sort($current_spells, SORT_NUMERIC);
-dpm($current_spells);
 
     // remove item
     $current_spells = array_diff($current_spells, array($spell_id));
-dpm($current_spells);
-dpm($original_spells);
 
-    //if ($current_spells !== $original_spells) {
-dpm('saving');
-      foreach($current_spells as $spell_id) {
-        $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
-      }
+    foreach($current_spells as $spell_id) {
+      $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
+    }
 
-      // Update field
-      $field_name = 'field_spells_prepared';
-      $info = field_info_field($field_name);
-      $fields = array($info['id'] => $info['id']);
+    // Update field
+    $field_name = 'field_spells_prepared';
+    $info = field_info_field($field_name);
+    $fields = array($info['id'] => $info['id']);
 
-      field_sql_storage_field_storage_write('character', $this, FIELD_STORAGE_UPDATE, $fields);
-    //}
+    field_sql_storage_field_storage_write('character', $this, FIELD_STORAGE_UPDATE, $fields);
   }
 
   function getSpells($options = array()) {
@@ -119,8 +109,7 @@ dpm('saving');
 
     $q->condition('sg.entity_id', $this->char_id);
     $q->condition('sp.status', 1);
-dpm($options);
-dpq($q);
+
     if ($options['filter']) {
       switch($options['filter']) {
       case 'prepared':
@@ -147,7 +136,7 @@ dpq($q);
     }
 
     $spell_return = $q->execute()->fetchAll();
-dpm($spell_return);
+
     foreach($spell_return as $s) {
       $loaded_spell = current(entity_load('spell', array($s->spell_id)));
       $spell_group = current(entity_load('spell_group', array($s->field_spell_groups_target_id)));
@@ -178,7 +167,7 @@ dpm($spell_return);
         $spells[$s->spell_id] = $loaded_spell;
       }
     }
-dpm($spells);
+
     return $spells;
   }
 
