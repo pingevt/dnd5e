@@ -361,9 +361,11 @@ function character_spell_manager_form($form, &$form_state, $character) {
     // Get components if necessary.
     $component_markup = '';
     $has_component = FALSE;
-    foreach ($spell->field_spell_components[LANGUAGE_NONE] as $field) {
-      if ($field['value'] == 'm') {
-        $has_component = TRUE;
+    if (isset($spell->field_spell_components[LANGUAGE_NONE])) {
+      foreach ($spell->field_spell_components[LANGUAGE_NONE] as $field) {
+        if ($field['value'] == 'm') {
+          $has_component = TRUE;
+        }
       }
     }
 
