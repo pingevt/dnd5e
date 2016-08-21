@@ -41,7 +41,7 @@ class Character extends Entity {
   }
 
   function prepareSpell($spell_id) {
-
+dpm('prepare');
     $current_spells = array($spell_id);
     foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
       $current_spells[] = $item['value'];
@@ -58,34 +58,44 @@ class Character extends Entity {
     // Update field
     $field_name = 'field_spells_prepared';
     $info = field_info_field($field_name);
-    $fields = array($info['id']);
+    $fields = array($info['id'] => $info['id']);
 
-    field_sql_storage_field_storage_write('character', $this, 'update', $fields);
+    field_sql_storage_field_storage_write('character', $this, FIELD_STORAGE_UPDATE, $fields);
   }
 
   function unprepareSpell($spell_id) {
+dpm('unprepareSpell: ' . $spell_id);
+
+    $original_spells = array();
 
     foreach ($this->field_spells_prepared[LANGUAGE_NONE] as $item) {
       $current_spells[] = $item['value'];
+      $original_spells[] = $item['value'];
     }
     unset($this->field_spells_prepared[LANGUAGE_NONE]);
-
+dpm($current_spells);
     $current_spells = array_unique($current_spells, SORT_NUMERIC);
     sort($current_spells, SORT_NUMERIC);
+dpm($current_spells);
 
     // remove item
     $current_spells = array_diff($current_spells, array($spell_id));
+dpm($current_spells);
+dpm($original_spells);
 
-    foreach($current_spells as $spell_id) {
-      $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
-    }
+    //if ($current_spells !== $original_spells) {
+dpm('saving');
+      foreach($current_spells as $spell_id) {
+        $this->field_spells_prepared[LANGUAGE_NONE][] = array('value' => $spell_id);
+      }
 
-    // Update field
-    $field_name = 'field_spells_prepared';
-    $info = field_info_field($field_name);
-    $fields = array($info['id']);
+      // Update field
+      $field_name = 'field_spells_prepared';
+      $info = field_info_field($field_name);
+      $fields = array($info['id'] => $info['id']);
 
-    field_sql_storage_field_storage_write('character', $this, 'update', $fields);
+      field_sql_storage_field_storage_write('character', $this, FIELD_STORAGE_UPDATE, $fields);
+    //}
   }
 
   function getSpells($options = array()) {
